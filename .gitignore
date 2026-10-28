@@ -13,3 +13,4 @@ comments-*.json
 tools/report.json
 tools/REPORT.md
 tools/pdflines.js
+!tools/SECURITY.md
