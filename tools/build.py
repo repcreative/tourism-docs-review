@@ -771,9 +771,6 @@ def csp_hash(script_text):
 
 def csp_meta():
     hashes = [csp_hash(docs_script())]
-    cl = clarity_inline()
-    if cl:
-        hashes.append(csp_hash(cl))
     policy = ("default-src 'none'; script-src 'self' " + ' '.join(hashes) + " https://www.clarity.ms https://scripts.clarity.ms; "
               "style-src 'self'; img-src 'self' data: https://*.clarity.ms https://c.bing.com; connect-src https://*.clarity.ms https://c.bing.com; "
               "font-src 'self'; base-uri 'none'; form-action 'self'; frame-src 'none'; object-src 'none'; manifest-src 'none'")
@@ -857,9 +854,13 @@ def aes_cbc_encrypt(plain, key, iv):
                        input=plain, capture_output=True, check=True)
     return r.stdout
 
-def clarity_inline():
+def clarity_id():
     pid = (CONFIG.get('clarity_project_id') or '').strip()
-    if not re.fullmatch(r'[A-Za-z0-9]+', pid):
+    return pid if re.fullmatch(r'[A-Za-z0-9]+', pid) else ''
+
+def clarity_inline():
+    pid = clarity_id()
+    if not pid:
         return ''
     return ('(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
             't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];'
@@ -887,7 +888,7 @@ def encrypt_page(full_html, key, salt_hex, iterations):
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="data:,">
 <title>מסמכי הפרויקט</title>
-<link rel="stylesheet" href="assets/style.css">{clarity_snippet()}
+<link rel="stylesheet" href="assets/style.css">
 </head>
 <body data-doc="gate" data-title="">
 <main class="gate" id="gate" data-clarity-mask="true">
@@ -901,7 +902,7 @@ def encrypt_page(full_html, key, salt_hex, iterations):
   </form>
 </main>
 <noscript><p class="gate-noscript">נדרש JavaScript כדי לפענח את המסמכים.</p></noscript>
-<script type="text/plain" id="payload" data-iv="{iv.hex()}" data-salt="{salt_hex}" data-iter="{iterations}">
+<script type="text/plain" id="payload" data-iv="{iv.hex()}" data-salt="{salt_hex}" data-iter="{iterations}" data-clarity="{clarity_id()}">
 {b64}
 </script>
 <script src="assets/gate.js"></script>
