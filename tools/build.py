@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 """Build the static review site from the five source documents.
 Standard library only (plus the system openssl binary for AES). Run: python3 tools/build.py
-Reads the five source files from the project root, writes HTML into site/.
+Reads the five source files from source/, writes HTML into site/.
 """
 import os, re, sys, json, zipfile, html, collections, subprocess, unicodedata, secrets, hashlib, base64, stat
 import xml.etree.ElementTree as ET
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 SITE = os.path.join(ROOT, 'site')
+SRC = os.path.join(ROOT, 'source')
 BUILD = os.path.dirname(os.path.abspath(__file__))   # tools/ (reports, helper scripts)
 CONFIG = json.load(open(os.path.join(BUILD, 'config.json'), encoding='utf-8')) if os.path.exists(os.path.join(BUILD, 'config.json')) else {}
 PASSWORD_FILE = os.path.join(ROOT, '.site-password')
@@ -147,7 +148,7 @@ def para_props(p):
     return style, ilvl, numid
 
 def convert_docx(doc):
-    path = os.path.join(ROOT, doc.meta['file'])
+    path = os.path.join(SRC, doc.meta['file'])
     z = zipfile.ZipFile(path)
     rels = {}
     relx = ET.fromstring(z.read('word/_rels/document.xml.rels'))
@@ -242,7 +243,7 @@ def md_inline(s):
     return s
 
 def convert_md(doc):
-    path = os.path.join(ROOT, doc.meta['file'])
+    path = os.path.join(SRC, doc.meta['file'])
     lines = open(path, encoding='utf-8').read().split('\n')
     i = 0; para = []
     def flush():
@@ -324,7 +325,7 @@ def logical_order(fragment):
     return ' '.join(' '.join(r[1]) for r in runs)
 
 def convert_pdf(doc):
-    path = os.path.join(ROOT, doc.meta['file'])
+    path = os.path.join(SRC, doc.meta['file'])
     js = os.path.join(BUILD, 'pdflines.js')
     open(js, 'w').write(PDF_JS)
     raw = subprocess.run(['osascript', '-l', 'JavaScript', js, path], capture_output=True, text=True, check=True).stdout

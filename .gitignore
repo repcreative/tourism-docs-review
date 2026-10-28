@@ -1,9 +1,4 @@
-# Source documents stay local only
-*.docx
-*.pdf
-*.md
-!README.md
-!site/_build/REPORT.md
+# Source documents are committed under source/ (owner's decision, 29.10.2026)
 # Local exports and OS files
 comments-*.json
 .DS_Store
