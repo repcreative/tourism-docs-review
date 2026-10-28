@@ -48,12 +48,28 @@
       });
     }, Promise.resolve());
   }
+  /* Clarity is loaded only after the decrypted content is on screen, so its first
+     snapshot is the document itself and not the password form, and the one-shot
+     DOM replacement never reaches it as a mutation flood. */
+  function loadClarity(docId) {
+    var id = P.getAttribute('data-clarity');
+    if (!id || !/^[A-Za-z0-9]+$/.test(id)) return;
+    if (!window.clarity) {
+      window.clarity = function () { (window.clarity.q = window.clarity.q || []).push(arguments); };
+      var t = document.createElement('script');
+      t.async = true; t.src = 'https://www.clarity.ms/tag/' + id;
+      document.head.appendChild(t);
+    }
+    try { window.clarity('set', 'document', docId || 'unknown'); } catch (e) {}
+  }
   function render(data) {
     document.title = data.title;
     document.body.setAttribute('data-doc', data.doc);
     document.body.setAttribute('data-title', data.title);
     document.body.innerHTML = data.html;
-    return runScripts(document.body);
+    return runScripts(document.body).then(function () {
+      requestAnimationFrame(function () { setTimeout(function () { loadClarity(data.doc); }, 50); });
+    });
   }
   function fail(text) {
     err.textContent = text; msg.textContent = '';
