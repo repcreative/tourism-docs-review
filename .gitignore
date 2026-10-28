@@ -1,0 +1,15 @@
+# Source documents stay local only
+*.docx
+*.pdf
+*.md
+!README.md
+!site/_build/REPORT.md
+# Local exports and OS files
+comments-*.json
+.DS_Store
+.claude/
+# Secrets and local reports
+.site-password
+tools/report.json
+tools/REPORT.md
+tools/pdflines.js
