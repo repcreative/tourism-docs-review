@@ -2,6 +2,10 @@
    password with PBKDF2-SHA256 in the browser and cached for this tab only. */
 (function () {
   'use strict';
+  if (window.top !== window.self) {
+    try { window.top.location.href = window.self.location.href; } catch (e) { document.documentElement.textContent = ''; }
+    return;
+  }
   var KEY = 'tourism-docs-key';
   var P = document.getElementById('payload');
   if (!P) return;
@@ -72,10 +76,11 @@
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var pwd = pwdIn.value;
+    pwdIn.value = '';
     if (!pwd) { fail('יש להזין סיסמה'); return; }
     err.textContent = ''; msg.textContent = 'מפענח…'; btn.disabled = true; pwdIn.disabled = true;
     var raw;
-    derive(pwd).then(function (bits) { raw = bits; return decrypt(bits); })
+    derive(pwd).then(function (bits) { pwd = null; raw = bits; return decrypt(bits); })
       .then(function (data) {
         try { sessionStorage.setItem(KEY, buf2hex(raw)); } catch (e2) {}
         return render(data);
