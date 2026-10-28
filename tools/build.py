@@ -763,6 +763,11 @@ def nav_html(current):
   </nav>
 </header>'''
 
+def asset(name):
+    path = os.path.join(SITE, 'assets', name)
+    h = hashlib.sha256(open(path, 'rb').read()).hexdigest()[:10] if os.path.exists(path) else '0'
+    return f'assets/{name}?v={h}'
+
 def docs_script():
     return 'window.DOCS = ' + json.dumps([dict(id=m['id'], title=m['title'], nav=m['nav']) for m in DOCS], ensure_ascii=False) + ';'
 
@@ -783,7 +788,7 @@ def page(title, body, docid, extra_head=''):
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(title)}</title>
-<link rel="stylesheet" href="assets/style.css">{extra_head}
+<link rel="stylesheet" href="{asset('style.css')}">{extra_head}
 </head>
 <body data-doc="{docid}" data-title="{html.escape(title, quote=True)}">
 <a class="skip" href="#main">דלג לתוכן</a>
@@ -803,7 +808,7 @@ def page(title, body, docid, extra_head=''):
 </div>
 <div id="status" class="status" role="status" aria-live="polite"></div>
 <script>{docs_script()}</script>
-<script src="assets/app.js"></script>
+<script src="{asset('app.js')}"></script>
 </body>
 </html>
 '''
@@ -888,7 +893,7 @@ def encrypt_page(full_html, key, salt_hex, iterations):
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="data:,">
 <title>מסמכי הפרויקט</title>
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{asset('style.css')}">
 </head>
 <body data-doc="gate" data-title="">
 <main class="gate" id="gate" data-clarity-mask="true">
@@ -905,7 +910,7 @@ def encrypt_page(full_html, key, salt_hex, iterations):
 <script type="text/plain" id="payload" data-iv="{iv.hex()}" data-salt="{salt_hex}" data-iter="{iterations}" data-clarity="{clarity_id()}">
 {b64}
 </script>
-<script src="assets/gate.js"></script>
+<script src="{asset('gate.js')}"></script>
 </body>
 </html>
 '''
