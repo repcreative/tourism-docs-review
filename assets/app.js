@@ -375,24 +375,65 @@
     var toDoc = href.split('#')[0].replace(/\.html$/, '');
     var blk = a.closest('.blk');
     var s = retStack();
-    s.push({ fromDoc: DOC, fromTitle: TITLE, fromAnchor: blk ? blk.getAttribute('data-block') : null, scrollY: window.scrollY, toDoc: toDoc });
+    var label = '';
+    if (blk) {
+      label = blk.tagName === 'TR'
+        ? Array.prototype.map.call(blk.children, function (c) { return c.textContent.replace(/\s+/g, ' ').trim(); }).filter(Boolean).join(' | ')
+        : blockText(blk);
+      label = label.slice(0, 70);
+    }
+    s.push({ fromDoc: DOC, fromTitle: TITLE, fromAnchor: blk ? blk.getAttribute('data-block') : null, fromLabel: label, scrollY: window.scrollY, toDoc: toDoc });
     if (s.length > 20) s.shift();
     setRetStack(s);
   });
+  function goBackTo(index) {
+    var st = retStack(); var t = st[index];
+    if (!t || DOC_IDS.indexOf(t.fromDoc) === -1) return;
+    setRetStack(st.slice(0, index));
+    sessionStorage.setItem(RESTORE_KEY, JSON.stringify({ doc: t.fromDoc, anchor: t.fromAnchor, scrollY: t.scrollY }));
+    var anchor = t.fromAnchor && ID_RE.test(t.fromAnchor) ? '#' + encodeURIComponent(t.fromAnchor) : '';
+    location.href = t.fromDoc + '.html' + anchor;
+  }
+  function buildTrail(s) {
+    var ul = $('#returnTrail'); if (!ul) return;
+    ul.innerHTML = '';
+    for (var i = s.length - 1; i >= 0; i--) {
+      var e = s[i];
+      if (DOC_IDS.indexOf(e.fromDoc) === -1) continue;
+      var li = document.createElement('li');
+      var b = document.createElement('button'); b.type = 'button';
+      var steps = s.length - i;
+      var num = document.createElement('span'); num.className = 'step'; num.textContent = steps === 1 ? 'צעד אחד אחורה' : steps + ' צעדים אחורה';
+      var t = document.createElement('span'); t.className = 'where';
+      t.textContent = (e.fromTitle || docTitles[e.fromDoc] || e.fromDoc) + (e.fromLabel ? ': ' + e.fromLabel + (e.fromLabel.length >= 70 ? '…' : '') : '');
+      b.appendChild(num); b.appendChild(t);
+      b.addEventListener('click', (function (idx) { return function () { goBackTo(idx); }; })(i));
+      li.appendChild(b); ul.appendChild(li);
+    }
+  }
+  function toggleTrail(open) {
+    var ul = $('#returnTrail'), more = $('#returnDocMore');
+    if (!ul || !more) return;
+    var show = typeof open === 'boolean' ? open : ul.hidden;
+    ul.hidden = !show; more.setAttribute('aria-expanded', show ? 'true' : 'false');
+    more.textContent = show ? '▼' : '▲';
+    if (show) { var first = ul.querySelector('button'); if (first) first.focus(); } else { more.focus(); }
+  }
   function showReturnDoc() {
     var box = $('#returnDoc'); if (!box) return;
     var s = retStack(); var top = s[s.length - 1];
     if (!top || top.toDoc !== DOC || DOC_IDS.indexOf(top.fromDoc) === -1) { box.hidden = true; return; }
     $('#returnDocBtn').textContent = 'חזרה ל-' + (top.fromTitle || docTitles[top.fromDoc] || top.fromDoc);
     box.hidden = false;
-    $('#returnDocBtn').onclick = function () {
-      var st = retStack(); var t = st.pop(); setRetStack(st);
-      sessionStorage.setItem(RESTORE_KEY, JSON.stringify({ doc: t.fromDoc, anchor: t.fromAnchor, scrollY: t.scrollY }));
-      var anchor = t.fromAnchor && ID_RE.test(t.fromAnchor) ? '#' + encodeURIComponent(t.fromAnchor) : '';
-      location.href = t.fromDoc + '.html' + anchor;
-    };
-    $('#returnDocClose').onclick = function () { var st = retStack(); st.pop(); setRetStack(st); box.hidden = true; };
+    var more = $('#returnDocMore');
+    if (more) { more.hidden = s.length < 2; more.onclick = function () { toggleTrail(); }; }
+    buildTrail(s);
+    $('#returnDocBtn').onclick = function () { goBackTo(retStack().length - 1); };
+    $('#returnDocClose').onclick = function () { var st = retStack(); st.pop(); setRetStack(st); box.hidden = true; toggleTrail(false); };
   }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { var ul = $('#returnTrail'); if (ul && !ul.hidden) toggleTrail(false); }
+  });
   function restoreIfNeeded() {
     var r = safeJSON(sessionStorage.getItem(RESTORE_KEY), null);
     if (!r || r.doc !== DOC) return false;

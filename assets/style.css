@@ -139,6 +139,17 @@ tr.cmt-row > td { background: #faf9f5; padding: 8px 12px; }
 .float-return button:focus-visible { outline: 3px solid #fff; outline-offset: -4px; }
 @keyframes rise { from { transform: translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
 
+/* return trail (several steps back) */
+.return-trail { pointer-events: auto; list-style: none; margin: 0; padding: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.22); max-width: min(560px, 100%); max-height: 50vh; overflow: auto; animation: rise .2s ease-out; }
+.return-trail[hidden] { display: none; }
+.return-trail li + li { border-top: 1px solid var(--border); }
+.return-trail button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; text-align: start; border: 0; background: transparent; border-radius: 8px; padding: 8px 12px; min-height: 48px; }
+.return-trail button:hover { background: var(--select); }
+.return-trail .step { font-size: 13px; font-weight: 700; color: var(--accent); }
+.return-trail .where { font-size: 14px; color: var(--text); line-height: 1.4; }
+.float-return button.more { padding: 0 14px; font-size: 13px; border-inline-start: 1px solid rgba(255,255,255,.35); }
+.float-return button.more[hidden] { display: none; }
+
 /* ---------- status ---------- */
 .status { position: fixed; top: calc(var(--topbar-h) + 8px); left: 50%; transform: translateX(-50%); background: #1c1c1c; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 14px; opacity: 0; transition: opacity .2s; z-index: 70; pointer-events: none; max-width: 90vw; }
 .status.show { opacity: 1; }
