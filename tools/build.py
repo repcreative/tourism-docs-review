@@ -12,6 +12,7 @@ SITE = os.path.join(ROOT, 'site')
 BUILD = os.path.dirname(os.path.abspath(__file__))   # tools/ (reports, helper scripts)
 CONFIG = json.load(open(os.path.join(BUILD, 'config.json'), encoding='utf-8')) if os.path.exists(os.path.join(BUILD, 'config.json')) else {}
 PASSWORD_FILE = os.path.join(ROOT, '.site-password')
+SALT_FILE = os.path.join(ROOT, '.site-salt')
 
 DOCS = [
     dict(id='01-brief', file='בריף UI.UX.pdf', kind='pdf', title='בריף UI/UX',
@@ -852,7 +853,21 @@ def load_password():
     with open(PASSWORD_FILE, 'w', encoding='utf-8') as f:
         f.write(pwd + '\n')
     os.chmod(PASSWORD_FILE, stat.S_IRUSR | stat.S_IWUSR)
+    if os.path.exists(SALT_FILE):
+        os.remove(SALT_FILE)      # a new password gets a new salt
     return pwd, True
+
+def load_salt():
+    """The salt stays fixed across builds so keys cached in readers' browsers keep working."""
+    if os.path.exists(SALT_FILE):
+        h = open(SALT_FILE, encoding='utf-8').read().strip()
+        if re.fullmatch(r'[0-9a-f]{32}', h):
+            return bytes.fromhex(h)
+    salt = os.urandom(16)
+    with open(SALT_FILE, 'w', encoding='utf-8') as f:
+        f.write(salt.hex() + '\n')
+    os.chmod(SALT_FILE, stat.S_IRUSR | stat.S_IWUSR)
+    return salt
 
 def aes_cbc_encrypt(plain, key, iv):
     r = subprocess.run(['openssl', 'enc', '-aes-256-cbc', '-K', key.hex(), '-iv', iv.hex(), '-nosalt'],
@@ -902,6 +917,7 @@ def encrypt_page(full_html, key, salt_hex, iterations):
     <p>הדפים מוצפנים. הזינו את הסיסמה שקיבלתם כדי לפתוח אותם בלשונית זו.</p>
     <label for="gatePwd">סיסמה</label>
     <input id="gatePwd" type="password" autocomplete="current-password" autocapitalize="off" spellcheck="false" required autofocus>
+    <label class="check"><input type="checkbox" id="gateRemember"> זכור אותי במכשיר זה ל-8 שעות</label>
     <div class="row"><button type="submit" class="primary" id="gateBtn">כניסה</button><span id="gateMsg" role="status" aria-live="polite"></span></div>
     <p class="err" id="gateErr" role="alert"></p>
   </form>
@@ -951,7 +967,7 @@ def build():
     # encrypt every page with a key derived from the site password
     pwd, generated = load_password()
     iterations = int(CONFIG.get('pbkdf2_iterations') or 600000)
-    salt = os.urandom(16)
+    salt = load_salt()
     key = hashlib.pbkdf2_hmac('sha256', pwd.encode('utf-8'), salt, iterations, dklen=32)
     for name, full in pages.items():
         open(os.path.join(SITE, name + '.html'), 'w', encoding='utf-8').write(encrypt_page(full, key, salt.hex(), iterations))

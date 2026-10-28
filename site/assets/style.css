@@ -173,6 +173,8 @@ main.gate { max-width: 440px; margin: 10vh auto 0; padding: 0 16px; }
 .gate p { color: var(--muted); }
 .gate label { display: block; font-weight: 600; margin: 14px 0 4px; }
 .gate input { font: inherit; width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--text); direction: ltr; }
+.gate .check { display: flex; align-items: center; gap: 8px; font-weight: 400; margin-top: 12px; cursor: pointer; }
+.gate .check input { width: 18px; height: 18px; margin: 0; }
 .gate .row { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
 .gate .err { color: var(--danger); font-weight: 600; min-height: 1.4em; margin: 10px 0 0; }
 .gate-noscript { max-width: 440px; margin: 2em auto; text-align: center; color: var(--danger); }

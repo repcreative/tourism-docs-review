@@ -446,6 +446,7 @@
   var lock = $('#lockBtn');
   if (lock) lock.addEventListener('click', function () {
     try { sessionStorage.removeItem('tourism-docs-key'); } catch (e) {}
+    try { localStorage.removeItem('tourism-docs-key-persist'); } catch (e) {}
     location.href = location.pathname;
   });
   var ex = $('#exportBtn'), im = $('#importBtn'), imf = $('#importFile');

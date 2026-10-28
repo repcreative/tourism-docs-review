@@ -7,6 +7,8 @@
     return;
   }
   var KEY = 'tourism-docs-key';
+  var PERSIST_KEY = 'tourism-docs-key-persist';
+  var PERSIST_MS = 8 * 60 * 60 * 1000;
   var P = document.getElementById('payload');
   if (!P) return;
   var cfg = {
@@ -80,12 +82,28 @@
     fail('הדפדפן הזה לא תומך בפענוח. יש לפתוח את האתר בכתובת https או בדפדפן עדכני.');
     return;
   }
+  function readPersisted() {
+    try {
+      var p = JSON.parse(localStorage.getItem(PERSIST_KEY) || 'null');
+      if (p && typeof p.k === 'string' && p.exp > Date.now()) return p.k;
+      if (p) localStorage.removeItem(PERSIST_KEY);
+    } catch (e) {}
+    return null;
+  }
+  function forget() {
+    try { sessionStorage.removeItem(KEY); } catch (e) {}
+    try { localStorage.removeItem(PERSIST_KEY); } catch (e) {}
+  }
   var cached = null;
   try { cached = sessionStorage.getItem(KEY); } catch (e) { cached = null; }
+  if (!cached) cached = readPersisted();
   if (cached) {
     form.hidden = true;
-    decrypt(hex2buf(cached)).then(render).catch(function () {
-      try { sessionStorage.removeItem(KEY); } catch (e) {}
+    decrypt(hex2buf(cached)).then(function (data) {
+      try { sessionStorage.setItem(KEY, cached); } catch (e) {}
+      return render(data);
+    }).catch(function () {
+      forget();
       form.hidden = false; pwdIn.focus();
     });
   }
@@ -98,7 +116,12 @@
     var raw;
     derive(pwd).then(function (bits) { pwd = null; raw = bits; return decrypt(bits); })
       .then(function (data) {
-        try { sessionStorage.setItem(KEY, buf2hex(raw)); } catch (e2) {}
+        var hex = buf2hex(raw);
+        try { sessionStorage.setItem(KEY, hex); } catch (e2) {}
+        var remember = document.getElementById('gateRemember');
+        if (remember && remember.checked) {
+          try { localStorage.setItem(PERSIST_KEY, JSON.stringify({ k: hex, exp: Date.now() + PERSIST_MS })); } catch (e3) {}
+        }
         return render(data);
       })
       .catch(function () { fail('סיסמה שגויה'); });
