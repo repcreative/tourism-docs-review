@@ -793,7 +793,7 @@ def page(title, body, docid, extra_head=''):
 <body data-doc="{docid}" data-title="{html.escape(title, quote=True)}">
 <a class="skip" href="#main">דלג לתוכן</a>
 {nav_html(docid)}
-<main id="main" class="{'doc' if docid != 'index' else 'home'}" data-clarity-mask="true">
+<main id="main" class="{'doc' if docid != 'index' else 'home'}">
 {body}
 </main>
 <div id="floats">
