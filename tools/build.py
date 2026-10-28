@@ -798,8 +798,10 @@ def page(title, body, docid, extra_head=''):
 {body}
 </main>
 <div id="floats">
+<ul id="returnTrail" class="return-trail" aria-label="כל התחנות שאפשר לחזור אליהן" hidden></ul>
 <div id="returnDoc" class="float-return" hidden>
   <button type="button" id="returnDocBtn"></button>
+  <button type="button" class="more" id="returnDocMore" aria-label="הצגת כל הצעדים אחורה" aria-expanded="false" aria-controls="returnTrail" hidden>▲</button>
   <button type="button" class="close" id="returnDocClose" aria-label="סגירת כפתור החזרה">×</button>
 </div>
 <div id="returnPos" class="float-return" hidden>
@@ -931,11 +933,37 @@ def encrypt_page(full_html, key, salt_hex, iterations):
 </html>
 '''
 
+# Columns removed from specific documents at the owner's request (29.10.2026).
+DROP_COLUMNS = {'05-client-response': ['התגובה שלי']}
+
+def drop_columns(doc):
+    names = DROP_COLUMNS.get(doc.id)
+    if not names:
+        return 0
+    removed = 0; drop_idx = None
+    for b in doc.blocks:
+        if b['type'] != 'tr':
+            drop_idx = None
+            continue
+        if b.get('table_start'):
+            drop_idx = None
+            for i, c in enumerate(b['cells']):
+                if html.unescape(re.sub(r'<[^>]+>', '', c)).strip() in names:
+                    drop_idx = i
+                    removed += 1
+                    break
+        if drop_idx is not None and drop_idx < len(b['cells']):
+            del b['cells'][drop_idx]
+    return removed
+
 def build():
     docs = {}
     for meta in DOCS:
         d = Doc(meta)
         {'docx': convert_docx, 'md': convert_md, 'pdf': convert_pdf}[meta['kind']](d)
+        n = drop_columns(d)
+        if n:
+            print(f'{d.id}: removed column(s) {DROP_COLUMNS[d.id]} from {n} table(s)')
         assign_ids(d)
         docs[d.id] = d
     for d in docs.values():
