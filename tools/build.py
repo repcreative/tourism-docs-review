@@ -641,6 +641,16 @@ def apply_links(doc, docs):
         else:
             b['html'] = re.sub(pat, bm, b['html'], flags=re.S)
     doc.refs = records
+    # drop links whose target is not http(s), mailto, an in-page anchor or one of our pages
+    safe_href = re.compile(r'^(https?://|mailto:|#|0\d-[a-z-]+\.html(#|$)|index\.html$)')
+    def sanitize(sv):
+        return re.sub(r'<a href="([^"]*)"[^>]*>(.*?)</a>',
+                      lambda m: m.group(0) if safe_href.match(html.unescape(m.group(1))) else m.group(2), sv, flags=re.S)
+    for b in doc.blocks:
+        if b['type'] == 'tr':
+            b['cells'] = [sanitize(c) for c in b['cells']]
+        else:
+            b['html'] = sanitize(b['html'])
     # external links open in a new tab
     ext_pat = re.compile(r'<a href="(https?://[^"]+)"(?![^>]*target=)')
     for b in doc.blocks:
@@ -753,8 +763,23 @@ def nav_html(current):
   </nav>
 </header>'''
 
+def docs_script():
+    return 'window.DOCS = ' + json.dumps([dict(id=m['id'], title=m['title'], nav=m['nav']) for m in DOCS], ensure_ascii=False) + ';'
+
+def csp_hash(script_text):
+    return "'sha256-" + base64.b64encode(hashlib.sha256(script_text.encode('utf-8')).digest()).decode('ascii') + "'"
+
+def csp_meta():
+    hashes = [csp_hash(docs_script())]
+    cl = clarity_inline()
+    if cl:
+        hashes.append(csp_hash(cl))
+    policy = ("default-src 'none'; script-src 'self' " + ' '.join(hashes) + " https://www.clarity.ms https://scripts.clarity.ms; "
+              "style-src 'self'; img-src 'self' data: https://*.clarity.ms; connect-src https://*.clarity.ms; "
+              "font-src 'self'; base-uri 'none'; form-action 'self'; frame-src 'none'; object-src 'none'; manifest-src 'none'")
+    return '<meta http-equiv="Content-Security-Policy" content="' + policy + '">'
+
 def page(title, body, docid, extra_head=''):
-    docs_json = json.dumps([dict(id=m['id'], title=m['title'], nav=m['nav']) for m in DOCS], ensure_ascii=False)
     return f'''<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -763,10 +788,10 @@ def page(title, body, docid, extra_head=''):
 <title>{esc(title)}</title>
 <link rel="stylesheet" href="assets/style.css">{extra_head}
 </head>
-<body data-doc="{docid}" data-title="{esc(title)}">
+<body data-doc="{docid}" data-title="{html.escape(title, quote=True)}">
 <a class="skip" href="#main">דלג לתוכן</a>
 {nav_html(docid)}
-<main id="main" class="{'doc' if docid != 'index' else 'home'}">
+<main id="main" class="{'doc' if docid != 'index' else 'home'}" data-clarity-mask="true">
 {body}
 </main>
 <div id="floats">
@@ -780,7 +805,7 @@ def page(title, body, docid, extra_head=''):
 </div>
 </div>
 <div id="status" class="status" role="status" aria-live="polite"></div>
-<script>window.DOCS = {docs_json};</script>
+<script>{docs_script()}</script>
 <script src="assets/app.js"></script>
 </body>
 </html>
@@ -832,13 +857,17 @@ def aes_cbc_encrypt(plain, key, iv):
                        input=plain, capture_output=True, check=True)
     return r.stdout
 
-def clarity_snippet():
+def clarity_inline():
     pid = (CONFIG.get('clarity_project_id') or '').strip()
     if not re.fullmatch(r'[A-Za-z0-9]+', pid):
         return ''
-    return ('\n<script>(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
+    return ('(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
             't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];'
-            'y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "' + pid + '");</script>')
+            'y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "' + pid + '");')
+
+def clarity_snippet():
+    cl = clarity_inline()
+    return ('\n<script>' + cl + '</script>') if cl else ''
 
 def encrypt_page(full_html, key, salt_hex, iterations):
     title = re.search(r'<title>(.*?)</title>', full_html, flags=re.S).group(1)
@@ -852,18 +881,20 @@ def encrypt_page(full_html, key, salt_hex, iterations):
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
+{csp_meta()}
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
 <title>מסמכי הפרויקט</title>
 <link rel="stylesheet" href="assets/style.css">{clarity_snippet()}
 </head>
 <body data-doc="gate" data-title="">
-<main class="gate" id="gate">
+<main class="gate" id="gate" data-clarity-mask="true">
   <form id="gateForm" aria-labelledby="gate-h">
     <h1 id="gate-h">מסמכי הפרויקט</h1>
     <p>הדפים מוצפנים. הזינו את הסיסמה שקיבלתם כדי לפתוח אותם בלשונית זו.</p>
     <label for="gatePwd">סיסמה</label>
-    <input id="gatePwd" type="password" autocomplete="current-password" required autofocus>
+    <input id="gatePwd" type="password" autocomplete="current-password" autocapitalize="off" spellcheck="false" required autofocus>
     <div class="row"><button type="submit" class="primary" id="gateBtn">כניסה</button><span id="gateMsg" role="status" aria-live="polite"></span></div>
     <p class="err" id="gateErr" role="alert"></p>
   </form>

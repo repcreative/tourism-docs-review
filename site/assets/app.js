@@ -11,8 +11,10 @@
   var DOC = body.getAttribute('data-doc');
   var TITLE = body.getAttribute('data-title');
   var isDocPage = DOC !== 'index';
-  var docTitles = {};
-  (window.DOCS || []).forEach(function (d) { docTitles[d.id] = d.title; });
+  var docTitles = {}, DOC_IDS = [];
+  (window.DOCS || []).forEach(function (d) { docTitles[d.id] = d.title; DOC_IDS.push(d.id); });
+  var ID_RE = /^[\w\u0590-\u05ff:.-]{1,120}$/;
+  var MAX_IMPORT_BYTES = 2000000, MAX_COMMENTS = 5000;
 
   function $(sel, root) { return (root || document).querySelector(sel); }
   function $all(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
@@ -38,7 +40,23 @@
     return clone.textContent.replace(/\s+/g, ' ').trim();
   }
   function byId(id) {
-    return document.getElementById(id) || $('[data-alias="' + id.replace(/"/g, '') + '"]');
+    if (!id || !ID_RE.test(id)) return null;
+    var el = document.getElementById(id);
+    if (el) return el;
+    try { return $('[data-alias="' + (window.CSS && CSS.escape ? CSS.escape(id) : id) + '"]'); } catch (e) { return null; }
+  }
+  function cleanComment(c) {
+    if (!c || typeof c !== 'object') return null;
+    var str = function (v, max) { return typeof v === 'string' && v.length <= max ? v : null; };
+    var id = str(c.id, 64), doc = str(c.doc, 40), block = str(c.block, 80), author = str(c.author, 100), text = str(c.text, 5000);
+    var createdAt = str(c.createdAt, 40);
+    if (!id || !/^[\w-]+$/.test(id) || DOC_IDS.indexOf(doc) === -1 || !block || block.indexOf(doc + ':') !== 0 || !/^[\w-]+:\d+$/.test(block)) return null;
+    if (author === null || text === null || !createdAt) return null;
+    return {
+      id: id, doc: doc, block: block, author: author, text: text, createdAt: createdAt,
+      updatedAt: str(c.updatedAt, 40) || null,
+      blockHash: str(c.blockHash, 16) || undefined
+    };
   }
   function blockById(bid) {
     var els = $all('.blk');
@@ -68,7 +86,10 @@
     if (!data || !Array.isArray(data.comments)) data = { version: 1, comments: [] };
     return data;
   }
-  function save(data) { localStorage.setItem(STORE_KEY, JSON.stringify(data)); }
+  function save(data) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); }
+    catch (e) { status('לא ניתן לשמור: אחסון הדפדפן מלא או חסום'); }
+  }
   function commentsFor(bid) {
     return load().comments.filter(function (c) { return c.block === bid; })
       .sort(function (a, b) { return (a.createdAt || '').localeCompare(b.createdAt || ''); });
@@ -108,24 +129,26 @@
     status('יוצאו ' + data.comments.length + ' הערות לקובץ ' + name);
   }
   function importComments(file) {
+    if (file.size > MAX_IMPORT_BYTES) { status('הקובץ גדול מדי לייבוא'); return; }
     var reader = new FileReader();
     reader.onload = function () {
       var incoming = safeJSON(reader.result, null);
-      if (!incoming || !Array.isArray(incoming.comments)) { status('הקובץ אינו קובץ הערות תקין'); return; }
+      if (!incoming || incoming.version !== 1 || !Array.isArray(incoming.comments)) { status('הקובץ אינו קובץ הערות תקין'); return; }
       var data = load();
       var byIdMap = {};
       data.comments.forEach(function (c) { byIdMap[c.id] = c; });
-      var added = 0, updated = 0;
-      incoming.comments.forEach(function (c) {
-        if (!c || !c.id || !c.block || !c.doc) return;
+      var added = 0, updated = 0, rejected = 0;
+      incoming.comments.slice(0, MAX_COMMENTS).forEach(function (raw) {
+        var c = cleanComment(raw);
+        if (!c) { rejected++; return; }
         var cur = byIdMap[c.id];
-        if (!cur) { data.comments.push(c); byIdMap[c.id] = c; added++; return; }
+        if (!cur) { if (data.comments.length >= MAX_COMMENTS) { rejected++; return; } data.comments.push(c); byIdMap[c.id] = c; added++; return; }
         var a = cur.updatedAt || cur.createdAt || '', b = c.updatedAt || c.createdAt || '';
         if (b > a) { Object.assign(cur, c); updated++; }
       });
       save(data);
       renderAll();
-      status('הייבוא הושלם: ' + added + ' הערות חדשות, ' + updated + ' עודכנו, ' + data.comments.length + ' סה"כ');
+      status('הייבוא הושלם: ' + added + ' הערות חדשות, ' + updated + ' עודכנו' + (rejected ? ', ' + rejected + ' נדחו' : '') + ', ' + data.comments.length + ' סה"כ');
     };
     reader.readAsText(file);
   }
@@ -359,13 +382,14 @@
   function showReturnDoc() {
     var box = $('#returnDoc'); if (!box) return;
     var s = retStack(); var top = s[s.length - 1];
-    if (!top || top.toDoc !== DOC) { box.hidden = true; return; }
+    if (!top || top.toDoc !== DOC || DOC_IDS.indexOf(top.fromDoc) === -1) { box.hidden = true; return; }
     $('#returnDocBtn').textContent = 'חזרה ל-' + (top.fromTitle || docTitles[top.fromDoc] || top.fromDoc);
     box.hidden = false;
     $('#returnDocBtn').onclick = function () {
       var st = retStack(); var t = st.pop(); setRetStack(st);
       sessionStorage.setItem(RESTORE_KEY, JSON.stringify({ doc: t.fromDoc, anchor: t.fromAnchor, scrollY: t.scrollY }));
-      location.href = t.fromDoc + '.html' + (t.fromAnchor ? '#' + encodeURIComponent(t.fromAnchor) : '');
+      var anchor = t.fromAnchor && ID_RE.test(t.fromAnchor) ? '#' + encodeURIComponent(t.fromAnchor) : '';
+      location.href = t.fromDoc + '.html' + anchor;
     };
     $('#returnDocClose').onclick = function () { var st = retStack(); st.pop(); setRetStack(st); box.hidden = true; };
   }
