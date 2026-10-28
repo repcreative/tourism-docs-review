@@ -775,7 +775,7 @@ def csp_meta():
     if cl:
         hashes.append(csp_hash(cl))
     policy = ("default-src 'none'; script-src 'self' " + ' '.join(hashes) + " https://www.clarity.ms https://scripts.clarity.ms; "
-              "style-src 'self'; img-src 'self' data: https://*.clarity.ms; connect-src https://*.clarity.ms; "
+              "style-src 'self'; img-src 'self' data: https://*.clarity.ms https://c.bing.com; connect-src https://*.clarity.ms https://c.bing.com; "
               "font-src 'self'; base-uri 'none'; form-action 'self'; frame-src 'none'; object-src 'none'; manifest-src 'none'")
     return '<meta http-equiv="Content-Security-Policy" content="' + policy + '">'
 
@@ -885,6 +885,7 @@ def encrypt_page(full_html, key, salt_hex, iterations):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
+<link rel="icon" href="data:,">
 <title>מסמכי הפרויקט</title>
 <link rel="stylesheet" href="assets/style.css">{clarity_snippet()}
 </head>
