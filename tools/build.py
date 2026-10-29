@@ -693,12 +693,200 @@ def apply_links(doc, docs):
                     b['html'] = f'<a href="#{heads[key]}" class="iref">{b["html"]}</a>'
                     doc.internal_links += 1
 
+# ------------------------------ decoration --------------------------------
+# Presentation-only markup. Each step wraps existing text in spans and never changes
+# the text itself, so the text hash that comments keep (blockHash in app.js) still matches.
+
+TAG_RE = re.compile('|'.join(f'(?P<{name}>{pat})' for name, pat in [
+    ('obs', r'\[OBSERVED(?:, [^\]<]{1,30})?\]'),
+    ('inf', r'\[INFERRED(?:, [^\]<]{1,30})?\]'),
+    ('rep', r'\[REPORTED(?:, [^\]<]{1,30})?\]'),
+    ('scope', r'\[הרחבת מכרז\]'),
+    ('ask', r'\[דורש בירור\]'),
+    ('unv', r'\[(?:לא מאומת|לא ברור)\]'),
+]))
+STATUS_RE = re.compile(r'^((?:<[^>]+>)*\s*)(בוצע|דורש בירור|סותר החלטה סופית)')
+STATUS_CLS = {'בוצע': 'done', 'דורש בירור': 'ask', 'סותר החלטה סופית': 'conflict'}
+SCORES = {'1', '2', '3', '4', '5', 'n.a.'}
+TS_RE = re.compile(r'^(\[\d\d:\d\d:\d\d\])(.*)$', re.S)
+HNUM_RE = re.compile(r'^((?:<[^>]+>)*)(\d+(?:\.\d+)*\.?|[א-ת]\.\d+|נספח [א-ת]\')(?=[\s:])')
+RID_RE = re.compile(r"^[A-Za-z\u0590-\u05ff']{1,5}-[A-Za-z]?\d{1,3}$")
+TOC_NUM_RE = re.compile(r'^(<a [^>]*>)(\d+(?:\.\d+)?\.?|[א-ת]\.\d+|(?:חלק|נספח) [א-ת]\':?)(\s+)(.*)(</a>)$', re.S)
+
+def on_text(s, fn):
+    """Apply fn to the text between tags only."""
+    return ''.join(part if part.startswith('<') else fn(part) for part in re.split(r'(<[^>]+>)', s))
+
+def tagify(s):
+    return on_text(s, lambda t: TAG_RE.sub(lambda m: f'<span class="tag tag-{m.lastgroup}">{m.group(0)}</span>', t))
+
+def cell_text(c):
+    return html.unescape(re.sub(r'<[^>]+>', '', c)).strip()
+
+def tables(doc):
+    groups = []
+    for b in doc.blocks:
+        if b['type'] != 'tr':
+            continue
+        if b.get('table_start') or not groups:
+            groups.append([])
+        groups[-1].append(b)
+    return groups
+
+def decorate(doc):
+    for b in doc.blocks:
+        if b['type'] == 'tr':
+            b['cells'] = [tagify(c) for c in b['cells']]
+        else:
+            b['html'] = tagify(b['html'])
+    for rows in tables(doc):
+        head = [cell_text(c) for c in rows[0]['cells']] if rows[0].get('header') else []
+        body = [r for r in rows if not r.get('header')]
+        # status column (client response): colour the leading status word
+        if 'סטטוס' in head:
+            i = head.index('סטטוס')
+            for r in body:
+                if i < len(r['cells']):
+                    r['cells'][i] = STATUS_RE.sub(lambda m: f'{m.group(1)}<span class="stat stat-{STATUS_CLS[m.group(2)]}">{m.group(2)}</span>', r['cells'][i], count=1)
+        # score columns (market survey): every body value is 1-5 or n.a.
+        width = max((len(r['cells']) for r in body), default=0)
+        for i in range(width):
+            vals = [cell_text(r['cells'][i]) for r in body if i < len(r['cells'])]
+            if len(vals) >= 2 and all(v in SCORES for v in vals) and any(v != 'n.a.' for v in vals):
+                for r in body:
+                    if i < len(r['cells']):
+                        v = cell_text(r['cells'][i])
+                        r['cells'][i] = f'<span class="score score-{"na" if v == "n.a." else v}">{r["cells"][i]}</span>'
+    if doc.id == '01-brief':
+        for b in doc.blocks:
+            if b['type'] == 'h' and re.fullmatch(r'עמוד \d+', plain(b).strip()):
+                b['cls'] = 'pagemark'
+            elif b['type'] == 'p' and not b.get('cls') and re.fullmatch(r"עמ' \d+", plain(b).strip()):
+                b['cls'] = 'pagefoot'
+    if doc.id == '04-meeting':
+        for b in doc.blocks:
+            if b['type'] == 'p' and TS_RE.match(b['html']):
+                b['cls'] = 'line'
+                b['html'] = TS_RE.sub(r'<span class="ts">\1</span><span class="say">\2</span>', b['html'], count=1)
+    if doc.id == '02-strategy':
+        in_toc = False
+        for b in doc.blocks:
+            if b['type'] == 'h' and b['level'] == 2:
+                if in_toc: break
+                in_toc = plain(b).strip().startswith('תוכן עניינים')
+                continue
+            if not in_toc or b['type'] != 'p':
+                continue
+            text = plain(b).strip()
+            kind = 'part' if text.startswith('חלק ') else 'ch' if re.match(r'(\d+\.|נספח [א-ת]\')\s', text) else 'sub'
+            b['toc'] = kind; b['cls'] = 'toc-' + kind
+            h = re.sub(r'</?strong>', '', b['html'])
+            b['html'] = TOC_NUM_RE.sub(r'\1<span class="toc-num">\2</span>\3<span class="toc-t">\4</span>\5', h, count=1)
+        for b in doc.blocks:
+            if b['type'] == 'h' and b['level'] == 2 and plain(b).strip().startswith('חלק '):
+                b['cls'] = 'part'
+    # numbered headings: the number gets its own span
+    for b in doc.blocks:
+        if b['type'] == 'h' and 2 <= b['level'] <= 4 and b.get('cls') != 'pagemark':
+            b['html'] = HNUM_RE.sub(r'\1<span class="hnum">\2</span>', b['html'], count=1)
+    # row identifiers (SEO-C4, ה-1) in the first column become chips
+    for rows in tables(doc):
+        body = [r for r in rows if not r.get('header') and r['cells']]
+        if len(body) >= 2 and all(RID_RE.match(cell_text(r['cells'][0])) for r in body):
+            for r in body:
+                r['cells'][0] = f'<span class="rid">{r["cells"][0]}</span>'
+    # the metadata line under the survey title reads as a subtitle
+    if doc.id == '03-market-survey':
+        for i, b in enumerate(doc.blocks[:-1]):
+            if b['type'] == 'h' and b['level'] == 1:
+                if doc.blocks[i + 1]['type'] == 'p' and not doc.blocks[i + 1].get('cls'):
+                    doc.blocks[i + 1]['cls'] = 'subtitle'
+                break
+    # status totals for the client-response dashboard, counted from the response tables
+    if doc.id == '05-client-response':
+        kpis = collections.Counter()
+        for rows in tables(doc):
+            head = [cell_text(c) for c in rows[0]['cells']] if rows[0].get('header') else []
+            if 'סטטוס' in head and "מס'" in head:
+                i = head.index('סטטוס')
+                for r in rows[1:]:
+                    m = STATUS_RE.match(cell_text(r['cells'][i])) if i < len(r['cells']) else None
+                    if m:
+                        kpis[STATUS_CLS[m.group(2)]] += 1
+        doc.kpis = kpis
+
+def hero_parts(doc):
+    """Opening and closing markup of the cover header that wraps the title and subtitles."""
+    n = DOCS.index(doc.meta) + 1
+    texts = [c for b in doc.blocks for c in (b['cells'] if b['type'] == 'tr' else [b.get('html', '')])]
+    words = sum(len(cell_text(t).split()) for t in texts)
+    chips = []
+    if doc.id == '01-brief':
+        chips.append((sum(1 for b in doc.blocks if b['type'] == 'h' and b['level'] == 3), 'סעיפים'))
+        chips.append((sum(1 for b in doc.blocks if b.get('cls') == 'pagemark'), 'עמודים'))
+    else:
+        h2 = [b for b in doc.blocks if b['type'] == 'h' and b['level'] == 2 and b.get('cls') != 'part'
+              and not plain(b).strip().startswith('תוכן עניינים')]
+        if h2:
+            chips.append((len(h2), 'פרקים'))
+    if doc.id == '04-meeting':
+        stamps = [TS_RE.match(cell_text(b['html'])).group(1) for b in doc.blocks if b['type'] == 'p' and TS_RE.match(cell_text(b['html']))]
+        if stamps:
+            h, m, sec = (int(x) for x in stamps[-1].strip('[]').split(':'))
+            chips.append((round(h * 60 + m + sec / 60), 'דקות הקלטה'))
+            chips.append((len(stamps), 'קטעי דיבור'))
+    n_tables = len(tables(doc))
+    if n_tables:
+        chips.append((n_tables, 'טבלאות'))
+    chips.append((max(1, round(words / 200)), 'דקות קריאה משוערות'))
+    meta = ''.join(f'<li><strong>{esc(str(v))}</strong>{esc(label)}</li>' for v, label in chips)
+    extra = ''
+    k = getattr(doc, 'kpis', None)
+    if k:
+        total = sum(k.values())
+        parts = [('done', 'בוצע'), ('ask', 'דורש בירור'), ('conflict', 'סותר החלטה סופית')]
+        cards = f'<div class="kpi"><span class="v">{total}</span><span class="l">הערות שטופלו</span></div>'
+        cards += ''.join(f'<div class="kpi kpi-{c}"><span class="v">{k[c]}</span><span class="l">{label}</span></div>' for c, label in parts)
+        x = 100.0; rects = ''
+        for c, _ in parts:
+            w = 100.0 * k[c] / total
+            x -= w
+            rects += f'<rect class="seg-{c}" x="{x:.3f}" y="0" width="{w:.3f}" height="6"/>'
+        extra = (f'<div class="kpis" role="group" aria-label="סיכום הטיפול בהערות">{cards}'
+                 f'<svg class="kbar" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true">{rects}</svg></div>')
+    open_html = (f'<header class="dochero"><span class="dochero-no" aria-hidden="true">{n:02d}</span>'
+                 f'<p class="dochero-eyebrow">מסמך {n:02d} מתוך {len(DOCS):02d}</p>')
+    close_html = f'<ul class="docmeta" aria-label="נתוני המסמך">{meta}</ul>{extra}</header>'
+    return open_html, close_html
+
 # -------------------------------- rendering -------------------------------
 
 def render_blocks(doc):
     out = []
     list_stack = []   # levels of open lists: (level, ordered)
     in_table = False
+    toc = []          # open table-of-contents containers: (rank, closing tag)
+    TOC_RANK = dict(nav=0, part=1, grid=2, ch=3, subs=4)
+
+    def toc_close(rank):
+        while toc and toc[-1][0] >= rank:
+            out.append(toc.pop()[1])
+
+    def toc_open(name, tag):
+        out.append(tag); toc.append((TOC_RANK[name], '</nav>' if name == 'nav' else '</section>' if name == 'part' else '</div>'))
+
+    def toc_enter(kind):
+        if not toc:
+            toc_open('nav', '<nav class="toc" aria-label="תוכן עניינים">')
+        if kind == 'part':
+            toc_close(1); toc_open('part', '<section class="toc-group">')
+        elif kind == 'ch':
+            toc_close(3)
+            if toc[-1][0] < 2:
+                toc_open('grid', '<div class="toc-grid toc-intro">')
+            toc_open('ch', '<div class="toc-card">')
+        elif toc[-1][0] == 3:
+            toc_open('subs', '<div class="toc-subs">')
 
     def close_lists(to_level=-1):
         while list_stack and list_stack[-1][0] > to_level:
@@ -707,12 +895,27 @@ def render_blocks(doc):
             if list_stack:
                 out.append('</li>')
 
+    hero_open, hero_close = hero_parts(doc)
+    in_hero = hero_done = in_sheet = False
+
     for b in doc.blocks:
         bid = b['block']
         idattr = f' id="{esc(b["id"])}"' if b['id'] else f' id="{esc(bid)}"'
         alias = f' data-alias="{b["alias"]}"' if b.get('alias') else ''
         if b['type'] != 'li' and list_stack:
             close_lists()
+        if toc and not b.get('toc'):
+            toc_close(0)
+        if b.get('toc'):
+            toc_enter(b['toc'])
+        if in_hero and not (b['type'] == 'p' and b.get('cls') == 'subtitle'):
+            out.append(hero_close); in_hero = False
+        if b['type'] == 'h' and b['level'] == 1 and not hero_done:
+            out.append(hero_open); in_hero = hero_done = True
+        if b.get('cls') == 'pagemark':
+            if in_sheet:
+                out.append('</section>')
+            out.append('<section class="sheet">'); in_sheet = True
         if b['type'] == 'tr':
             if b.get('table_start'):
                 out.append('<div class="tablewrap"><table>')
@@ -724,10 +927,13 @@ def render_blocks(doc):
                 out.append('</table></div>'); in_table = False
             continue
         if b['type'] == 'h':
-            out.append(f'<h{b["level"]} class="blk" tabindex="0" data-block="{bid}"{idattr}{alias}>{b["html"]}</h{b["level"]}>')
+            cls = ' ' + b['cls'] if b.get('cls') else ''
+            out.append(f'<h{b["level"]} class="blk{cls}" tabindex="0" data-block="{bid}"{idattr}{alias}>{b["html"]}</h{b["level"]}>')
         elif b['type'] == 'p':
             cls = ' ' + b['cls'] if b.get('cls') else ''
             out.append(f'<p class="blk{cls}" tabindex="0" data-block="{bid}"{idattr}>{b["html"]}</p>')
+            if b.get('toc') == 'part':
+                toc_open('grid', '<div class="toc-grid">')
         elif b['type'] == 'li':
             lvl = b['level']; ordered = b.get('ordered', False)
             if not list_stack:
@@ -743,6 +949,11 @@ def render_blocks(doc):
                     out.append('<ol>' if ordered else '<ul>'); list_stack.append((lvl, ordered))
             out.append(f'<li class="blk" tabindex="0" data-block="{bid}"{idattr}>{b["html"]}</li>')
     close_lists()
+    toc_close(0)
+    if in_hero:
+        out.append(hero_close)
+    if in_sheet:
+        out.append('</section>')
     return '\n'.join(out)
 
 def nav_html(current):
@@ -753,16 +964,18 @@ def nav_html(current):
     home_cur = ' aria-current="page"' if current == 'index' else ''
     return f'''<header class="topbar">
   <nav aria-label="ניווט בין המסמכים">
-    <a class="home" href="index.html"{home_cur}>דף הכניסה</a>
+    <a class="brand" href="index.html"{home_cur} title="דף הכניסה"><img src="{asset('logo.png')}" alt="rep creative" width="137" height="30"><span class="vh">דף הכניסה</span></a>
     <ul class="doclinks">{''.join(items)}</ul>
     <div class="tools">
       <span class="count" id="navCount" aria-live="polite"></span>
+      <button type="button" id="outlineBtn" class="outline-btn" aria-label="ניווט במסמך" aria-controls="outline" aria-expanded="false" hidden><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M3 5h14M3 10h10M3 15h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span>ניווט במסמך</span></button>
       <button type="button" id="exportBtn">ייצוא הערות</button>
       <button type="button" id="importBtn">ייבוא הערות</button>
       <input type="file" id="importFile" accept="application/json,.json" hidden aria-label="בחירת קובץ הערות לייבוא">
       <button type="button" id="lockBtn" title="נעילת המסמכים בלשונית זו">נעילה</button>
     </div>
   </nav>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
 </header>'''
 
 def asset(name):
@@ -798,6 +1011,12 @@ def page(title, body, docid, extra_head=''):
 <main id="main" class="{'doc' if docid != 'index' else 'home'}">
 {body}
 </main>
+<aside id="outline" class="outline" aria-labelledby="outline-h" hidden>
+  <div class="outline-head"><h2 id="outline-h">ניווט במסמך</h2><button type="button" class="close" id="outlineClose" aria-label="סגירת הניווט">×</button></div>
+  <ol id="outlineList"></ol>
+</aside>
+<div id="outlineScrim" class="outline-scrim" hidden></div>
+<footer class="sitefoot"><img src="{asset('logo-symbol.png')}" alt="" width="40" height="19"><span>rep creative</span></footer>
 <div id="floats">
 <ul id="returnTrail" class="return-trail" aria-label="כל התחנות שאפשר לחזור אליהן" hidden></ul>
 <div id="returnDoc" class="float-return" hidden>
@@ -909,12 +1128,16 @@ def encrypt_page(full_html, key, salt_hex, iterations):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<link rel="icon" href="data:,">
+<link rel="icon" type="image/png" sizes="32x32" href="{asset('favicon-32.png')}">
+<link rel="icon" type="image/png" sizes="192x192" href="{asset('favicon-192.png')}">
+<link rel="apple-touch-icon" href="{asset('apple-touch-icon.png')}">
+<meta name="theme-color" content="#f7f5f1">
 <title>מסמכי הפרויקט</title>
 <link rel="stylesheet" href="{asset('style.css')}">
 </head>
 <body data-doc="gate" data-title="">
 <main class="gate" id="gate" data-clarity-mask="true">
+  <img class="logo" src="{asset('logo.png')}" alt="rep creative" width="640" height="140">
   <form id="gateForm" aria-labelledby="gate-h">
     <h1 id="gate-h">מסמכי הפרויקט</h1>
     <p>הדפים מוצפנים. הזינו את הסיסמה שקיבלתם כדי לפתוח אותם בלשונית זו.</p>
@@ -924,6 +1147,7 @@ def encrypt_page(full_html, key, salt_hex, iterations):
     <div class="row"><button type="submit" class="primary" id="gateBtn">כניסה</button><span id="gateMsg" role="status" aria-live="polite"></span></div>
     <p class="err" id="gateErr" role="alert"></p>
   </form>
+  <p class="gate-foot">גישה מאובטחת · הצפנת AES-256</p>
 </main>
 <noscript><p class="gate-noscript">נדרש JavaScript כדי לפענח את המסמכים.</p></noscript>
 <script type="text/plain" id="payload" data-iv="{iv.hex()}" data-salt="{salt_hex}" data-iter="{iterations}" data-clarity="{clarity_id()}">
@@ -969,6 +1193,7 @@ def build():
         docs[d.id] = d
     for d in docs.values():
         apply_links(d, docs)
+        decorate(d)
     report = dict(docs={}, refs=[], unsure=[])
     pages = {}
     for d in docs.values():
@@ -986,8 +1211,12 @@ def build():
     for meta in DOCS:
         items.append(f'''<li class="doccard"><a href="{meta['id']}.html"><span class="num">{meta['id'][:2]}</span><span class="t">{esc(meta['title'])}</span></a>
 <p>{esc(meta['desc'])}</p><span class="count" data-doc-count="{meta['id']}"></span></li>''')
-    body = f'''<h1>מסמכי פלטפורמת התיירות הלאומית</h1>
+    body = f'''<header class="hero">
+<img class="mark" src="{asset('logo-symbol.png')}" alt="" width="480" height="229">
+<p class="eyebrow">מסמכי הפרויקט</p>
+<h1>מסמכי פלטפורמת התיירות הלאומית</h1>
 <p class="lead">חמשת מסמכי הפרויקט בגרסת קריאה מקושרת: כל הפניה בין מסמכים היא קישור, ואפשר להוסיף הערות על כל פסקה, כותרת או שורת טבלה. ההערות נשמרות בדפדפן הזה בלבד, וניתן לייצא ולייבא אותן כקובץ.</p>
+</header>
 <ol class="doclist">
 {''.join(items)}
 </ol>
