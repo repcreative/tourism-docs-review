@@ -453,7 +453,7 @@
   function hideReturnPos() { var b = $('#returnPos'); if (b) b.hidden = true; }
   document.addEventListener('click', function (e) {
     var a = e.target.closest('a[href^="#"]');
-    if (!a || a.closest('.topbar') || a.getAttribute('href') === '#main') return;
+    if (!a || a.closest('.topbar, .outline') || a.getAttribute('href') === '#main') return;
     var id = decodeURIComponent(a.getAttribute('href').slice(1));
     if (!id) { e.preventDefault(); return; }
     var el = byId(id);
@@ -483,6 +483,84 @@
     if (el.hasAttribute('tabindex')) el.focus({ preventScroll: true });
   }
 
+  /* ---------------- outline drawer and reading progress ---------------- */
+  var outline = $('#outline'), outlineBtn = $('#outlineBtn'), outlineList = $('#outlineList'), scrim = $('#outlineScrim');
+  var heads = [], activeIdx = -1, outlineTimer = null, spyQueued = false;
+  function buildOutline() {
+    var art = $('article.document');
+    if (!art || !outline || !outlineBtn || !outlineList) return;
+    var all = $all('h2.blk, h3.blk', art).filter(function (h) { return !h.classList.contains('pagemark'); });
+    var topTag = all.filter(function (h) { return h.tagName === 'H2'; }).length >= 2 ? 'H2' : 'H3';
+    var items = topTag === 'H3' ? all.filter(function (h) { return h.tagName === 'H3'; }) : all;
+    if (items.length < 3) return;
+    var curLi = null, curSub = null;
+    items.forEach(function (h) {
+      var a = document.createElement('a');
+      a.href = '#' + encodeURIComponent(h.id);
+      a.textContent = h.textContent.replace(/\s+/g, ' ').trim();
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        closeOutline(false);
+        history.replaceState(null, '', '#' + encodeURIComponent(h.id));
+        h.scrollIntoView({ block: 'start' });
+        flash(h);
+        h.focus({ preventScroll: true });
+      });
+      var li = document.createElement('li'); li.appendChild(a);
+      if (h.tagName === topTag || !curLi) {
+        li.className = 'o-top' + (h.classList.contains('part') ? ' o-part' : '');
+        outlineList.appendChild(li); curLi = li; curSub = null;
+      } else {
+        if (!curSub) { curSub = document.createElement('ol'); curLi.appendChild(curSub); curLi.classList.add('has-sub'); }
+        curSub.appendChild(li);
+      }
+      heads.push({ h: h, a: a, group: curLi });
+    });
+    outlineBtn.hidden = false;
+    outlineBtn.addEventListener('click', function () { if (outline.hidden) openOutline(); else closeOutline(true); });
+    $('#outlineClose').addEventListener('click', function () { closeOutline(true); });
+    if (scrim) scrim.addEventListener('click', function () { closeOutline(true); });
+  }
+  function openOutline() {
+    clearTimeout(outlineTimer);
+    outline.hidden = false; if (scrim) scrim.hidden = false;
+    requestAnimationFrame(function () { outline.classList.add('open'); if (scrim) scrim.classList.add('open'); });
+    outlineBtn.setAttribute('aria-expanded', 'true');
+    var cur = $('a[aria-current]', outline) || $('a', outline);
+    if (cur) {
+      outlineList.scrollTop += cur.getBoundingClientRect().top - outlineList.getBoundingClientRect().top - outlineList.clientHeight / 3;
+      cur.focus({ preventScroll: true });
+    }
+  }
+  function closeOutline(refocus) {
+    if (!outline || outline.hidden) return;
+    outline.classList.remove('open'); if (scrim) scrim.classList.remove('open');
+    outlineBtn.setAttribute('aria-expanded', 'false');
+    clearTimeout(outlineTimer);
+    outlineTimer = setTimeout(function () { outline.hidden = true; if (scrim) scrim.hidden = true; }, 220);
+    if (refocus) outlineBtn.focus();
+  }
+  function spy() {
+    spyQueued = false;
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var idx = -1;
+    for (var i = 0; i < heads.length; i++) {
+      if (heads[i].h.getBoundingClientRect().top <= 140) idx = i; else break;
+    }
+    var bar = $('#progressBar');
+    if (bar) bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')';
+    if (idx === activeIdx) return;
+    var prev = heads[activeIdx];
+    if (prev) { prev.a.removeAttribute('aria-current'); prev.group.classList.remove('open'); }
+    activeIdx = idx;
+    var cur = heads[idx];
+    if (cur) { cur.a.setAttribute('aria-current', 'location'); cur.group.classList.add('open'); }
+  }
+  function queueSpy() { if (!spyQueued) { spyQueued = true; requestAnimationFrame(spy); } }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && outline && !outline.hidden) closeOutline(true);
+  });
+
   /* ---------------- init ---------------- */
   var lock = $('#lockBtn');
   if (lock) lock.addEventListener('click', function () {
@@ -496,10 +574,20 @@
     im.addEventListener('click', function () { imf.value = ''; imf.click(); });
     imf.addEventListener('change', function () { if (imf.files && imf.files[0]) importComments(imf.files[0]); });
   }
+  // on narrow screens the document tabs scroll sideways: bring the current one into view
+  var curTab = $('.topbar .doclinks a[aria-current]');
+  if (curTab) {
+    var tabs = curTab.closest('.doclinks'), tr = tabs.getBoundingClientRect(), cr = curTab.getBoundingClientRect();
+    if (tabs.scrollWidth > tabs.clientWidth) tabs.scrollLeft += cr.left - tr.left - (tr.width - cr.width) / 2;
+  }
   renderAll();
   if (isDocPage) {
+    buildOutline();
     showReturnDoc();
     if (!restoreIfNeeded()) jumpToHash();
+    window.addEventListener('scroll', queueSpy, { passive: true });
+    window.addEventListener('resize', queueSpy);
+    queueSpy();
   }
   window.addEventListener('storage', function (e) { if (e.key === STORE_KEY) renderAll(); });
 })();
