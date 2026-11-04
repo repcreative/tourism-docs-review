@@ -10,3 +10,6 @@ tools/REPORT.md
 tools/pdflines.js
 !tools/SECURITY.md
 .site-salt
+
+# Tender materials (financial offer, tender Q&A) — local only, never committed
+tender/
