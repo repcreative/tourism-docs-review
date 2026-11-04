@@ -9,5 +9,3 @@
 - **בנייה מחדש** מקובצי המקור שבתיקייה `source/`: `python3 tools/build.py`. הסיסמה נקראת מהקובץ `.site-password` בשורש הפרויקט, ונוצרת אוטומטית אם חסרה.
 
 https://repcreative.github.io/tourism-docs-review/
-
-cKE78qaWSyDnzMoPb-RQdz^FQ&3GBMiM
