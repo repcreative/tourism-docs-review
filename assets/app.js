@@ -1,5 +1,6 @@
 /* Review site behaviour: cross-document return, in-document return, comments.
-   No network, no dependencies. Works from file:// and from a static server. */
+   Comments are shared through an encrypted store (window.COMMENTS_API); without it,
+   or offline, they stay in this browser. No dependencies. */
 (function () {
   'use strict';
   var STORE_KEY = 'tourism-docs-comments';
@@ -55,7 +56,10 @@
     return {
       id: id, doc: doc, block: block, author: author, text: text, createdAt: createdAt,
       updatedAt: str(c.updatedAt, 40) || null,
-      blockHash: str(c.blockHash, 16) || undefined
+      blockHash: str(c.blockHash, 16) || undefined,
+      resolved: c.resolved === true,
+      resolvedBy: c.resolved === true ? (str(c.resolvedBy, 100) || '') : null,
+      resolvedAt: str(c.resolvedAt, 40) || null
     };
   }
   function blockById(bid) {
@@ -80,45 +84,224 @@
   }
   function safeJSON(s, fallback) { try { return JSON.parse(s); } catch (e) { return fallback; } }
 
-  /* ---------------- storage ---------------- */
-  function load() {
-    var data = safeJSON(localStorage.getItem(STORE_KEY), null);
+  /* ---------------- storage ----------------
+     The local copy (localStorage) is a cache of the shared store. Every change is
+     marked _sync ('put' or 'del') until the server has it. On the server each comment
+     is an AES-GCM blob encrypted with a key derived from the site key, so the server
+     never sees comment text, names or which paragraph a comment belongs to. */
+  function loadRaw() {
+    var data = null;
+    try { data = safeJSON(localStorage.getItem(STORE_KEY), null); } catch (e) {}
     if (!data || !Array.isArray(data.comments)) data = { version: 1, comments: [] };
     return data;
   }
-  function save(data) {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); }
-    catch (e) { status('לא ניתן לשמור: אחסון הדפדפן מלא או חסום'); }
+  function saveRaw(data) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); return true; }
+    catch (e) { status('לא ניתן לשמור: אחסון הדפדפן מלא או חסום'); return false; }
   }
+  function load() {
+    return { version: 1, comments: loadRaw().comments.filter(function (c) { return c._sync !== 'del'; }) };
+  }
+  function upsertComment(c) {
+    var data = loadRaw();
+    c._sync = 'put';
+    var i = data.comments.findIndex(function (x) { return x.id === c.id; });
+    if (i === -1) data.comments.push(c); else data.comments[i] = c;
+    saveRaw(data); queueSync();
+  }
+  function removeComment(id) {
+    var data = loadRaw();
+    data.comments.forEach(function (x) { if (x.id === id) x._sync = 'del'; });
+    saveRaw(data); queueSync();
+  }
+  function getComment(id) { return load().comments.filter(function (x) { return x.id === id; })[0] || null; }
   function commentsFor(bid) {
     return load().comments.filter(function (c) { return c.block === bid; })
       .sort(function (a, b) { return (a.createdAt || '').localeCompare(b.createdAt || ''); });
   }
-  function countFor(docId) { return load().comments.filter(function (c) { return c.doc === docId; }).length; }
+  function docComments(docId) { return load().comments.filter(function (c) { return c.doc === docId; }); }
+  function openCount(list) { return list.filter(function (c) { return !c.resolved; }).length; }
+
+  /* ---------------- shared sync ---------------- */
+  var API = typeof window.COMMENTS_API === 'string' && /^https:\/\//.test(window.COMMENTS_API) ? window.COMMENTS_API : '';
+  var SYNC_EVERY = 60000;
+  var cryptoP = null, syncing = false, syncAgain = false, syncTimer = null, syncState = API ? 'pending' : 'off', lastSyncErr = 0;
+  function hex2buf(h) { var a = new Uint8Array(h.length / 2); for (var i = 0; i < a.length; i++) a[i] = parseInt(h.substr(i * 2, 2), 16); return a; }
+  function buf2hex(b) { return Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join(''); }
+  function buf2b64(b) { var s = '', a = new Uint8Array(b); for (var i = 0; i < a.length; i++) s += String.fromCharCode(a[i]); return btoa(s); }
+  function b642buf(s) { var bin = atob(s), a = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return a; }
+  function siteKeyHex() {
+    var k = null;
+    try { k = sessionStorage.getItem('tourism-docs-key'); } catch (e) {}
+    return k && /^[0-9a-f]{64}$/.test(k) ? k : null;
+  }
+  function getCrypto() {
+    if (cryptoP) return cryptoP;
+    var hex = siteKeyHex();
+    if (!hex || !window.crypto || !crypto.subtle) return Promise.reject(new Error('no key'));
+    var raw = hex2buf(hex), enc = new TextEncoder();
+    cryptoP = Promise.all([
+      crypto.subtle.importKey('raw', raw, 'HKDF', false, ['deriveKey']).then(function (base) {
+        return crypto.subtle.deriveKey({ name: 'HKDF', hash: 'SHA-256', salt: new Uint8Array(0), info: enc.encode('tourism-comments-enc-v1') },
+          base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+      }),
+      crypto.subtle.importKey('raw', raw, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']).then(function (mk) {
+        return crypto.subtle.sign('HMAC', mk, enc.encode('tourism-comments-api-v1'));
+      }).then(buf2hex)
+    ]).then(function (r) { return { key: r[0], token: r[1] }; });
+    cryptoP.catch(function () { cryptoP = null; });
+    return cryptoP;
+  }
+  function publicFields(c) {
+    var o = {};
+    Object.keys(c).forEach(function (k) { if (k.charAt(0) !== '_') o[k] = c[k]; });
+    return o;
+  }
+  function encryptComment(cr, c) {
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, cr.key, new TextEncoder().encode(JSON.stringify(publicFields(c))))
+      .then(function (ct) { var all = new Uint8Array(12 + ct.byteLength); all.set(iv); all.set(new Uint8Array(ct), 12); return buf2b64(all); });
+  }
+  function decryptComment(cr, data) {
+    var all = b642buf(data);
+    return crypto.subtle.decrypt({ name: 'AES-GCM', iv: all.slice(0, 12) }, cr.key, all.slice(12))
+      .then(function (pt) { return safeJSON(new TextDecoder().decode(pt), null); });
+  }
+  var serverEtag = null, serverVersion = '';
+  function api(cr, method, body) {
+    var headers = { 'Authorization': 'Bearer ' + cr.token };
+    if (body) headers['Content-Type'] = 'application/json';
+    if (!body && serverEtag) headers['If-None-Match'] = serverEtag;
+    var ctl = window.AbortController ? new AbortController() : null;
+    var timer = ctl ? setTimeout(function () { ctl.abort(); }, 20000) : null;
+    return fetch(API, {
+      method: method, cache: 'no-store', credentials: 'omit', headers: headers,
+      body: body ? JSON.stringify(body) : undefined, signal: ctl ? ctl.signal : undefined
+    }).then(function (r) {
+      clearTimeout(timer);
+      if (r.status === 304) return null;
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      var et = r.headers.get('ETag');
+      return r.json().then(function (j) { serverEtag = et || null; return j; });
+    });
+  }
+  function clearFlags(sent) {
+    var data = loadRaw();
+    data.comments = data.comments.filter(function (x) {
+      var f = sent[x.id];
+      if (!f || x._sync !== f.sync || x.updatedAt !== f.updatedAt || x.resolvedAt !== f.resolvedAt) return true;
+      if (f.sync === 'del') return false;
+      delete x._sync; return true;
+    });
+    saveRaw(data);
+  }
+  function setSyncState(s) { var changed = s !== syncState; syncState = s; if (changed) updateCounts(); }
+  function sync() {
+    if (!API) return Promise.resolve();
+    if (syncing) { syncAgain = true; return Promise.resolve(); }
+    syncing = true;
+    var before = JSON.stringify(load().comments);
+    return getCrypto().then(function (cr) {
+      var raw = loadRaw();
+      if (!raw.shared) {
+        // first sync in this browser: share comments written before the shared store existed
+        raw.comments.forEach(function (c) { if (!c._sync) c._sync = 'put'; });
+        raw.shared = true; saveRaw(raw);
+      }
+      var pending = raw.comments.filter(function (c) { return c._sync; });
+      var sent = {};
+      var req;
+      if (pending.length) {
+        // every pending change goes up in one request (one Blob upload)
+        req = Promise.all(pending.map(function (c) {
+          sent[c.id] = { sync: c._sync, updatedAt: c.updatedAt, resolvedAt: c.resolvedAt };
+          return c._sync === 'del' ? null : encryptComment(cr, c).then(function (data) { return { id: c.id, data: data }; });
+        })).then(function (recs) {
+          return api(cr, 'POST', {
+            put: recs.filter(Boolean),
+            del: pending.filter(function (c) { return c._sync === 'del'; }).map(function (c) { return c.id; })
+          });
+        }).then(function (res) { clearFlags(sent); return res; });
+      } else {
+        req = api(cr, 'GET');
+      }
+      return req.then(function (res) {
+        if (!res) return null; // 304: nothing new on the server
+        // the Blob CDN may serve the previous version for up to a minute after a save
+        var ver = typeof res.updatedAt === 'string' ? res.updatedAt : '';
+        var seen = serverVersion || loadRaw().serverVersion || '';
+        if (ver && seen && ver < seen) return null;
+        if (ver) serverVersion = ver;
+        var recs = Array.isArray(res.comments) ? res.comments : [];
+        return Promise.all(recs.map(function (r) {
+          return decryptComment(cr, r.data).then(function (c) { c = cleanComment(c); return c && c.id === r.id ? c : null; }, function () { return null; });
+        }));
+      }).then(function (server) {
+        setSyncState('ok');
+        if (!server) return;
+        var data = loadRaw();
+        var local = {};
+        data.comments.forEach(function (c) { if (c._sync) local[c.id] = c; });
+        var out = [];
+        server.forEach(function (c) { if (c && !local[c.id]) out.push(c); });
+        Object.keys(local).forEach(function (id) { out.push(local[id]); });
+        data.comments = out; data.shared = true;
+        if (serverVersion) data.serverVersion = serverVersion;
+        saveRaw(data);
+      });
+    }).catch(function () {
+      setSyncState('error');
+      if (Date.now() - lastSyncErr > 120000) { lastSyncErr = Date.now(); status('אין חיבור לשרת ההערות. ההערות נשמרו בדפדפן ויישלחו כשהחיבור יחזור'); }
+    }).then(function () {
+      syncing = false;
+      if (JSON.stringify(load().comments) !== before) renderAll();
+      if (syncAgain) { syncAgain = false; queueSync(); }
+    });
+  }
+  function queueSync() {
+    if (!API) return;
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(sync, 250);
+  }
+  function startSync() {
+    if (!API) return;
+    sync();
+    setInterval(function () { if (document.visibilityState !== 'hidden') sync(); }, SYNC_EVERY);
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') sync(); });
+    window.addEventListener('online', function () { sync(); });
+  }
 
   /* ---------------- counters ---------------- */
+  function countLabel(list) {
+    var n = list.length, open = openCount(list);
+    if (!n) return '';
+    var base = n === 1 ? 'הערה אחת' : n + ' הערות';
+    return open === n ? base : base + ' · ' + (open ? open + ' פתוחות' : 'כולן טופלו');
+  }
   function updateCounts() {
     var data = load();
+    var all = data.comments, openAll = openCount(all);
+    var syncNote = syncState === 'error' ? ' · לא מסונכרן' : '';
     var nav = $('#navCount');
     if (nav) {
       if (isDocPage) {
-        var n = data.comments.filter(function (c) { return c.doc === DOC; }).length;
-        nav.textContent = 'הערות במסמך זה: ' + n + ' (סה"כ ' + data.comments.length + ')';
+        var mine = all.filter(function (c) { return c.doc === DOC; });
+        nav.textContent = 'פתוחות במסמך: ' + openCount(mine) + ' מתוך ' + mine.length + ' (סה"כ ' + openAll + ' פתוחות)' + syncNote;
       } else {
-        nav.textContent = 'סה"כ הערות: ' + data.comments.length;
+        nav.textContent = 'הערות פתוחות: ' + openAll + ' מתוך ' + all.length + syncNote;
       }
+      nav.title = syncState === 'ok' ? 'ההערות משותפות לכל הקוראים' : syncState === 'error' ? 'אין חיבור לשרת ההערות כרגע' : '';
     }
     $all('[data-doc-count]').forEach(function (el) {
-      var n = countFor(el.getAttribute('data-doc-count'));
-      el.textContent = n ? (n === 1 ? 'הערה אחת' : n + ' הערות') : '';
+      el.textContent = countLabel(docComments(el.getAttribute('data-doc-count')));
     });
     var total = $('#totalCount');
-    if (total) total.textContent = data.comments.length ? 'סה"כ ' + data.comments.length + ' הערות בכל המסמכים.' : 'עדיין אין הערות.';
+    if (total) total.textContent = all.length ? 'סה"כ ' + all.length + ' הערות בכל המסמכים, ' + (openAll ? openAll + ' פתוחות.' : 'כולן טופלו.') : 'עדיין אין הערות.';
   }
 
   /* ---------------- export / import ---------------- */
   function exportComments() {
-    var data = load();
+    var data = { version: 1, comments: load().comments.map(publicFields) };
     var d = new Date();
     var name = 'comments-' + d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + '.json';
     var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -134,7 +317,7 @@
     reader.onload = function () {
       var incoming = safeJSON(reader.result, null);
       if (!incoming || incoming.version !== 1 || !Array.isArray(incoming.comments)) { status('הקובץ אינו קובץ הערות תקין'); return; }
-      var data = load();
+      var data = loadRaw();
       var byIdMap = {};
       data.comments.forEach(function (c) { byIdMap[c.id] = c; });
       var added = 0, updated = 0, rejected = 0;
@@ -142,13 +325,16 @@
         var c = cleanComment(raw);
         if (!c) { rejected++; return; }
         var cur = byIdMap[c.id];
+        c._sync = 'put';
         if (!cur) { if (data.comments.length >= MAX_COMMENTS) { rejected++; return; } data.comments.push(c); byIdMap[c.id] = c; added++; return; }
-        var a = cur.updatedAt || cur.createdAt || '', b = c.updatedAt || c.createdAt || '';
-        if (b > a) { Object.assign(cur, c); updated++; }
+        if (cur._sync === 'del') return;
+        var a = cur.resolvedAt > (cur.updatedAt || '') ? cur.resolvedAt : (cur.updatedAt || cur.createdAt || '');
+        var b = c.resolvedAt > (c.updatedAt || '') ? c.resolvedAt : (c.updatedAt || c.createdAt || '');
+        if (b > a) { Object.keys(cur).forEach(function (k) { delete cur[k]; }); Object.assign(cur, c); updated++; }
       });
-      save(data);
-      renderAll();
-      status('הייבוא הושלם: ' + added + ' הערות חדשות, ' + updated + ' עודכנו' + (rejected ? ', ' + rejected + ' נדחו' : '') + ', ' + data.comments.length + ' סה"כ');
+      saveRaw(data);
+      renderAll(); queueSync();
+      status('הייבוא הושלם: ' + added + ' הערות חדשות, ' + updated + ' עודכנו' + (rejected ? ', ' + rejected + ' נדחו' : '') + ', ' + load().comments.length + ' סה"כ');
     };
     reader.readAsText(file);
   }
@@ -256,15 +442,25 @@
       var form = $('.cmt-form', host);
       var curHash = hashText(blockText(blk));
       list.forEach(function (c) {
-        var item = document.createElement('div'); item.className = 'cmt'; item.setAttribute('data-id', c.id);
+        var item = document.createElement('div'); item.className = 'cmt' + (c.resolved ? ' resolved' : ''); item.setAttribute('data-id', c.id);
         var meta = document.createElement('div'); meta.className = 'meta';
         var au = document.createElement('span'); au.className = 'author'; au.textContent = c.author || '';
         var dt = document.createElement('span'); dt.textContent = fmtDate(c.createdAt);
         meta.appendChild(au); meta.appendChild(dt);
         if (c.updatedAt) { var up = document.createElement('span'); up.textContent = '(נערך ' + fmtDate(c.updatedAt) + ')'; meta.appendChild(up); }
         if (c.blockHash && c.blockHash !== curHash) { var ch = document.createElement('span'); ch.className = 'changed'; ch.textContent = 'הפסקה השתנתה'; meta.appendChild(ch); }
+        if (c.resolved) {
+          var rs = document.createElement('span'); rs.className = 'done';
+          rs.textContent = 'טופלה' + (c.resolvedBy ? ' על ידי ' + c.resolvedBy : '') + (c.resolvedAt ? ' · ' + fmtDate(c.resolvedAt) : '');
+          meta.appendChild(rs);
+        }
         var text = document.createElement('div'); text.className = 'text'; text.textContent = c.text || '';
         var actions = document.createElement('div'); actions.className = 'actions';
+        var rb = document.createElement('button'); rb.type = 'button';
+        rb.className = c.resolved ? 'reopen' : 'resolve';
+        rb.textContent = c.resolved ? 'פתיחה מחדש' : 'סימון כטופלה';
+        rb.setAttribute('aria-label', (c.resolved ? 'פתיחה מחדש של ההערה של ' : 'סימון כטופלה של ההערה של ') + (c.author || ''));
+        rb.addEventListener('click', function () { toggleResolved(blk, c.id); });
         var eb = document.createElement('button'); eb.type = 'button'; eb.textContent = 'עריכה';
         eb.setAttribute('aria-label', 'עריכת ההערה של ' + (c.author || ''));
         eb.addEventListener('click', function () { openForm(blk, c); });
@@ -272,23 +468,45 @@
         db.setAttribute('aria-label', 'מחיקת ההערה של ' + (c.author || ''));
         db.addEventListener('click', function () {
           if (!confirm('למחוק את ההערה של ' + (c.author || '') + '?')) return;
-          var data = load();
-          data.comments = data.comments.filter(function (x) { return x.id !== c.id; });
-          save(data); renderBlock(blk); updateCounts(); status('ההערה נמחקה');
+          removeComment(c.id); renderBlock(blk); updateCounts(); status('ההערה נמחקה');
           blk.focus();
         });
-        actions.appendChild(eb); actions.appendChild(db);
+        actions.appendChild(rb); actions.appendChild(eb); actions.appendChild(db);
         item.appendChild(meta); item.appendChild(text); item.appendChild(actions);
         if (form) host.insertBefore(item, form); else host.appendChild(item);
       });
+      var open = openCount(list), badge = open ? String(open) : '✓';
       blk.classList.add('has-comments');
-      blk.setAttribute('data-count', String(list.length));
-      if (blk.tagName === 'TR' && blk.firstElementChild) blk.firstElementChild.setAttribute('data-count', String(list.length));
+      blk.classList.toggle('all-resolved', !open);
+      blk.setAttribute('data-count', badge);
+      if (blk.tagName === 'TR' && blk.firstElementChild) blk.firstElementChild.setAttribute('data-count', badge);
     } else {
-      blk.classList.remove('has-comments'); blk.removeAttribute('data-count');
+      blk.classList.remove('has-comments', 'all-resolved'); blk.removeAttribute('data-count');
       if (blk.tagName === 'TR' && blk.firstElementChild) blk.firstElementChild.removeAttribute('data-count');
       removeHostIfEmpty(blk);
     }
+  }
+  function toggleResolved(blk, id) {
+    var c = getComment(id);
+    if (!c) return;
+    c = JSON.parse(JSON.stringify(c));
+    if (c.resolved) {
+      c.resolved = false; c.resolvedBy = null; c.resolvedAt = isoLocal(new Date());
+    } else {
+      var who = '';
+      try { who = localStorage.getItem(AUTHOR_KEY) || ''; } catch (e) {}
+      if (!who) {
+        who = (window.prompt('השם שלך (יוצג ליד הסימון "טופלה"):', '') || '').trim().slice(0, 100);
+        if (!who) return;
+        try { localStorage.setItem(AUTHOR_KEY, who); } catch (e) {}
+      }
+      c.resolved = true; c.resolvedBy = who; c.resolvedAt = isoLocal(new Date());
+    }
+    upsertComment(c);
+    renderBlock(blk); updateCounts();
+    status(c.resolved ? 'ההערה סומנה כטופלה' : 'ההערה נפתחה מחדש');
+    var btn = $('.cmt[data-id="' + id + '"] .actions button', hostFor(blk, false) || document);
+    if (btn) btn.focus();
   }
   function closeForms() {
     $all('.cmt-form').forEach(function (f) {
@@ -312,7 +530,8 @@
       '<div class="row"><button type="submit" class="primary">' + (existing ? 'שמירת השינויים' : 'שמירת ההערה') + '</button>' +
       '<button type="button" class="cancel">ביטול</button><span class="err" role="alert"></span></div>';
     var nameIn = $('input', form), textIn = $('textarea', form), err = $('.err', form);
-    nameIn.value = existing ? (existing.author || '') : (localStorage.getItem(AUTHOR_KEY) || '');
+    var savedName = ''; try { savedName = localStorage.getItem(AUTHOR_KEY) || ''; } catch (e) {}
+    nameIn.value = existing ? (existing.author || '') : savedName;
     textIn.value = existing ? (existing.text || '') : '';
     $('.cancel', form).addEventListener('click', function () { form.remove(); removeHostIfEmpty(blk); blk.focus(); });
     form.addEventListener('submit', function (e) {
@@ -320,18 +539,17 @@
       var author = nameIn.value.trim(), text = textIn.value.trim();
       if (!author) { err.textContent = 'יש להזין שם'; nameIn.focus(); return; }
       if (!text) { err.textContent = 'יש להזין טקסט להערה'; textIn.focus(); return; }
-      localStorage.setItem(AUTHOR_KEY, author);
-      var data = load();
+      try { localStorage.setItem(AUTHOR_KEY, author); } catch (e2) {}
       if (existing) {
-        var c = data.comments.filter(function (x) { return x.id === existing.id; })[0];
-        if (c) { c.author = author; c.text = text; c.updatedAt = isoLocal(new Date()); }
+        var c = getComment(existing.id);
+        if (c) { c = JSON.parse(JSON.stringify(c)); c.author = author; c.text = text; c.updatedAt = isoLocal(new Date()); upsertComment(c); }
       } else {
-        data.comments.push({
+        upsertComment({
           id: uid(), doc: DOC, block: blk.getAttribute('data-block'), author: author, text: text,
-          createdAt: isoLocal(new Date()), updatedAt: null, blockHash: hashText(blockText(blk))
+          createdAt: isoLocal(new Date()), updatedAt: null, blockHash: hashText(blockText(blk)),
+          resolved: false, resolvedBy: null, resolvedAt: null
         });
       }
-      save(data);
       form.remove();
       renderBlock(blk); updateCounts();
       status(existing ? 'ההערה עודכנה' : 'ההערה נשמרה');
@@ -354,10 +572,11 @@
       var sec = document.createElement('section'); sec.id = 'orphans'; sec.className = 'sources';
       sec.innerHTML = '<h2>הערות על יחידות שלא נמצאו במסמך</h2>';
       orphans.forEach(function (c) {
-        var d = document.createElement('div'); d.className = 'cmt';
+        var d = document.createElement('div'); d.className = 'cmt' + (c.resolved ? ' resolved' : '');
         d.innerHTML = '<div class="meta"><span class="author"></span><span></span><span class="changed">הפסקה השתנתה</span></div><div class="text"></div>';
         $('.author', d).textContent = c.author || ''; $('.meta span:nth-child(2)', d).textContent = fmtDate(c.createdAt) + ' · ' + c.block;
         $('.text', d).textContent = c.text || '';
+        if (c.resolved) { var rs = document.createElement('span'); rs.className = 'done'; rs.textContent = 'טופלה'; $('.meta', d).appendChild(rs); }
         sec.appendChild(d);
       });
       $('#main').appendChild(sec);
@@ -581,6 +800,7 @@
     if (tabs.scrollWidth > tabs.clientWidth) tabs.scrollLeft += cr.left - tr.left - (tr.width - cr.width) / 2;
   }
   renderAll();
+  startSync();
   if (isDocPage) {
     buildOutline();
     showReturnDoc();
