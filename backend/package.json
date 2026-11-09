@@ -1,0 +1,14 @@
+{
+  "name": "tourism-docs-comments",
+  "version": "1.0.0",
+  "description": "Encrypted shared comment store for the tourism docs review site",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@vercel/blob": "^2.8.2"
+  },
+  "private": true
+}

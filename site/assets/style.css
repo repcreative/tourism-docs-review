@@ -23,6 +23,8 @@
   --flash: #f3ecff;
   --select: #f1eef8;
   --danger: #b3261e;
+  --done: #2e7d4f;
+  --done-soft: #e8f4ec;
   --shadow-sm: 0 1px 2px rgba(21, 20, 27, .05), 0 1px 1px rgba(21, 20, 27, .03);
   --shadow-md: 0 1px 2px rgba(21, 20, 27, .04), 0 8px 24px -8px rgba(43, 39, 53, .14);
   --shadow-lg: 0 2px 4px rgba(21, 20, 27, .04), 0 24px 48px -16px rgba(43, 39, 53, .24);
@@ -151,6 +153,8 @@ tr.blk.has-comments > :first-child { border-inline-start: 3px solid var(--accent
 }
 tr.blk.has-comments::after { display: none; }
 tr.blk.has-comments > :first-child::before { content: attr(data-count); display: inline-block; min-width: 22px; padding: 0 6px; margin-inline-end: 6px; border-radius: 11px; background: var(--chrome); color: #fff; font-size: 12px; font-weight: 700; line-height: 22px; text-align: center; }
+.blk.has-comments.all-resolved:not(tr), tr.blk.has-comments.all-resolved > :first-child { border-inline-start-color: var(--done); }
+.blk.has-comments.all-resolved::after, tr.blk.has-comments.all-resolved > :first-child::before { background: var(--done); box-shadow: none; }
 a.xref::after { content: " ↗"; font-size: .75em; opacity: .7; }
 
 /* block toolbar (add comment) */
@@ -169,6 +173,13 @@ tr.cmt-row > td { background: var(--surface-2); padding: 10px 14px; }
 .cmt .text { margin: 4px 0 8px; white-space: pre-wrap; }
 .cmt .actions { display: flex; gap: 6px; }
 .cmt .actions button { min-height: 30px; padding: 2px 12px; font-size: 13.5px; }
+.cmt.resolved { background: var(--surface-2); border-inline-start-color: var(--done); box-shadow: none; }
+.cmt.resolved .text { color: var(--muted); }
+.cmt .done { color: var(--done); background: var(--done-soft); font-weight: 600; border-radius: 10px; padding: 0 8px; }
+.cmt .done::before { content: "✓ "; }
+.cmt .actions button.resolve { border-color: var(--done); color: var(--done); }
+.cmt .actions button.resolve:hover { background: var(--done-soft); }
+.cmt .actions { flex-wrap: wrap; }
 .cmt-form { background: var(--surface); border: 1px solid #d8d0ea; border-radius: 14px; padding: 14px 16px; margin: 8px 0; box-shadow: var(--shadow-md); }
 .cmt-form label { display: block; font-weight: 600; font-size: .9em; margin: 6px 0 4px; color: var(--ink); }
 .cmt-form input, .cmt-form textarea { font: inherit; width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; background: var(--surface-2); color: var(--text); transition: border-color .15s, box-shadow .15s, background-color .15s; }
