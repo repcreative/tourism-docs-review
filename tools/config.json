@@ -1,4 +1,5 @@
 {
   "clarity_project_id": "z501qgxtpz",
-  "pbkdf2_iterations": 600000
+  "pbkdf2_iterations": 600000,
+  "comments_api": "https://tourism-docs-comments.vercel.app/api/comments"
 }

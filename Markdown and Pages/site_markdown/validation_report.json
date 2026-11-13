@@ -1,0 +1,2062 @@
+{
+ "generated": "2026-11-13 13:54",
+ "sites": {
+  "agents.israel.travel": {
+   "file": "agents.israel.travel.md",
+   "pages": 21,
+   "structure_errors": [],
+   "page_errors": {},
+   "page_warnings": {},
+   "sitemap": {
+    "sitemap_urls": 21,
+    "md_urls": 21,
+    "missing_in_md": [],
+    "extra_in_md": [],
+    "duplicated_in_md": [],
+    "same_order": true,
+    "first_order_mismatch": null
+   },
+   "unique_images": 101,
+   "http": {
+    "pages_ok": 21,
+    "pages_failed": [],
+    "images_ok": 97,
+    "images_failed": [
+     {
+      "url": "https://agents.israel.travel/assets/img/posts/bank/JewishIsraelItinerary/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://agents.israel.travel/assets/img/posts/bank/MultiGenerationalIsraelItinerary/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://agents.israel.travel/assets/img/posts/bank/generalisraelitinerary/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://agents.israel.travel/assets/img/posts/bank/israelculinarytour/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     }
+    ]
+   },
+   "structure_ok": true,
+   "sitemap_ok": true
+  },
+  "brochures.goisrael.com": {
+   "file": "brochures.goisrael.com.md",
+   "pages": 12,
+   "structure_errors": [],
+   "page_errors": {},
+   "page_warnings": {},
+   "sitemap": {
+    "sitemap_urls": 12,
+    "md_urls": 12,
+    "missing_in_md": [],
+    "extra_in_md": [],
+    "duplicated_in_md": [],
+    "same_order": true,
+    "first_order_mismatch": null
+   },
+   "unique_images": 172,
+   "http": {
+    "pages_ok": 12,
+    "pages_failed": [],
+    "images_ok": 172,
+    "images_failed": []
+   },
+   "structure_ok": true,
+   "sitemap_ok": true
+  },
+  "de.goisrael.com": {
+   "file": "de.goisrael.com.md",
+   "pages": 94,
+   "structure_errors": [],
+   "page_errors": {},
+   "page_warnings": {
+    "62": [
+     "original page has no body text (video/images only) – documented in the file"
+    ]
+   },
+   "sitemap": {
+    "sitemap_urls": 94,
+    "md_urls": 94,
+    "missing_in_md": [],
+    "extra_in_md": [],
+    "duplicated_in_md": [],
+    "same_order": true,
+    "first_order_mismatch": null
+   },
+   "unique_images": 465,
+   "http": {
+    "pages_ok": 94,
+    "pages_failed": [],
+    "images_ok": 465,
+    "images_failed": []
+   },
+   "structure_ok": true,
+   "sitemap_ok": true
+  },
+  "es.goisrael.com": {
+   "file": "es.goisrael.com.md",
+   "pages": 94,
+   "structure_errors": [],
+   "page_errors": {},
+   "page_warnings": {},
+   "sitemap": {
+    "sitemap_urls": 94,
+    "md_urls": 94,
+    "missing_in_md": [],
+    "extra_in_md": [],
+    "duplicated_in_md": [],
+    "same_order": true,
+    "first_order_mismatch": null
+   },
+   "unique_images": 324,
+   "http": {
+    "pages_ok": 94,
+    "pages_failed": [],
+    "images_ok": 324,
+    "images_failed": []
+   },
+   "structure_ok": true,
+   "sitemap_ok": true
+  },
+  "fr.goisrael.com": {
+   "file": "fr.goisrael.com.md",
+   "pages": 101,
+   "structure_errors": [],
+   "page_errors": {},
+   "page_warnings": {},
+   "sitemap": {
+    "sitemap_urls": 101,
+    "md_urls": 101,
+    "missing_in_md": [],
+    "extra_in_md": [],
+    "duplicated_in_md": [],
+    "same_order": true,
+    "first_order_mismatch": null
+   },
+   "unique_images": 521,
+   "http": {
+    "pages_ok": 101,
+    "pages_failed": [],
+    "images_ok": 508,
+    "images_failed": [
+     {
+      "url": "https://fr.goisrael.com/assets/img/gallery/galilee/small/18.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://fr.goisrael.com/assets/img/gallery/haifa/small/10.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://fr.goisrael.com/assets/img/gallery/haifa/small/11.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://fr.goisrael.com/assets/img/gallery/haifa/small/12.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://fr.goisrael.com/assets/img/gallery/haifa/small/13.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://fr.goisrael.com/assets/img/gallery/haifa/small/14.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://fr.goisrael.com/assets/img/gallery/haifa/small/15.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://fr.goisrael.com/assets/img/gallery/haifa/small/16.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://fr.goisrael.com/assets/img/gallery/haifa/small/17.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://fr.goisrael.com/assets/img/gallery/haifa/small/18.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://fr.goisrael.com/assets/img/gallery/haifa/small/7.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://fr.goisrael.com/assets/img/gallery/haifa/small/8.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://fr.goisrael.com/assets/img/gallery/haifa/small/9.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     }
+    ]
+   },
+   "structure_ok": true,
+   "sitemap_ok": true
+  },
+  "goisrael.com.br": {
+   "file": "goisrael.com.br.md",
+   "pages": 133,
+   "structure_errors": [],
+   "page_errors": {},
+   "page_warnings": {
+    "4": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "7": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "15": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "16": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "17": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "18": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "19": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "20": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "110": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "111": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "112": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "113": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "114": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "115": [
+     "original page has no body text (video/images only) – documented in the file"
+    ]
+   },
+   "sitemap": {
+    "sitemap_urls": 133,
+    "md_urls": 133,
+    "missing_in_md": [],
+    "extra_in_md": [],
+    "duplicated_in_md": [],
+    "same_order": true,
+    "first_order_mismatch": null
+   },
+   "unique_images": 787,
+   "http": {
+    "pages_ok": 64,
+    "pages_failed": [
+     {
+      "url": "https://goisrael.com.br/neot-semadar/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/neot-semadar/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/go-to-guide/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/go-to-guide/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/jerusalems-old-city/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/jerusalems-old-city/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/one-day-in-eilat/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/one-day-in-eilat/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/non-stop-markets/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/non-stop-markets/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/israel-a-destination-for-all/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/israel-a-destination-for-all/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/adventure-in-the-negev-2/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/adventure-in-the-negev-2/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/joys-of-jaffa/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/joys-of-jaffa/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/welcome-to-eilat/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/welcome-to-eilat/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/non-stop-culture/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/non-stop-culture/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/epic-nights-in-the-non-stop-city/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/epic-nights-in-the-non-stop-city/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/first-time-in-jerusalem/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/first-time-in-jerusalem/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/the-dead-sea/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/the-dead-sea/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/a-taste-of-jerusalem/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/a-taste-of-jerusalem/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/enjoy-and-indulge/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/enjoy-and-indulge/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/day-trippin/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/day-trippin/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/tel-aviv-adventures/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/tel-aviv-adventures/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/cycle-tel-aviv/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/cycle-tel-aviv/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/cool-jerusalem/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/cool-jerusalem/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/tel-aviv-on-wheels/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/tel-aviv-on-wheels/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/arce/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/arce/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/western-wall-wonders/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/western-wall-wonders/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/jerusalem-shopping/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/jerusalem-shopping/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/the-stunning-bahai-gardens/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/the-stunning-bahai-gardens/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/white-city-splendor/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/white-city-splendor/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/the-magical-dead-sea/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/the-magical-dead-sea/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/o-deserto-do-neguev/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/o-deserto-do-neguev/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/tower-of-david-museum/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/tower-of-david-museum/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/all-sensory-markets/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/all-sensory-markets/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/epic-masada/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/epic-masada/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/the-bedouin-experience/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/the-bedouin-experience/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/the-sea-of-galilee-kinneret/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/the-sea-of-galilee-kinneret/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/cratera-ramon/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/cratera-ramon/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/the-israel-national-trail/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/the-israel-national-trail/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/gourmet-tel-aviv/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/gourmet-tel-aviv/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/discover-the-wine-routes/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/discover-the-wine-routes/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/breakfast-in-israel/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/breakfast-in-israel/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/birdtastic-hula-lake/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/birdtastic-hula-lake/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/timna-treasures/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/timna-treasures/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/the-incomparable-kibbutz-experience/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/the-incomparable-kibbutz-experience/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/unforgettable-yad-vashem/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/unforgettable-yad-vashem/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/national-parks/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/national-parks/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/unesco-world-heritage/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/unesco-world-heritage/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/massada/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/massada/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/caesarea/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/caesarea/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/nazareth/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/nazareth/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/tiberias-tiberiades/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/tiberias-tiberiades/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/machtesh-ramon/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/machtesh-ramon/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/tel-aviv/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/tel-aviv/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/jerusalem/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/jerusalem/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/dead-sea/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/dead-sea/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/jeeps/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/jeeps/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/beit-hatfutsot/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/beit-hatfutsot/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/mini-israel/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/mini-israel/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/the-biblical-zoo/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/the-biblical-zoo/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/jordan-river/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/jordan-river/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/ultimate-beach-fun/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/ultimate-beach-fun/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/eilat/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/eilat/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/haifa/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/haifa/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/galilee/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/galilee/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/bet-shean/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/bet-shean/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/zichron-yaakov/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/zichron-yaakov/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/rosh-pina/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/rosh-pina/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/safed/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/safed/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/mount-karkom/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/mount-karkom/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/madatech/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/madatech/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/the-israeli-childrens-museum/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/the-israeli-childrens-museum/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/bloomfield-science-museum/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/bloomfield-science-museum/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://goisrael.com.br/big-idea-camp/",
+      "status": 404,
+      "final_url": "https://goisrael.com.br/big-idea-camp/",
+      "ok": false,
+      "note": ""
+     }
+    ],
+    "images_ok": 785,
+    "images_failed": [
+     {
+      "url": "https://goisrael.com.br/wp-content/uploads/2020/03/br_Cover480x300_special.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=iso-8859-1",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/tel_aviv/wp-content/uploads/2018/08/skyabove1-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     }
+    ]
+   },
+   "structure_ok": true,
+   "sitemap_ok": true
+  },
+  "holyland.israel.travel": {
+   "file": "holyland.israel.travel.md",
+   "pages": 80,
+   "structure_errors": [],
+   "page_errors": {},
+   "page_warnings": {
+    "5": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "10": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "11": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "12": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "16": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "17": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "25": [
+     "original page has no body text (video/images only) – documented in the file"
+    ]
+   },
+   "sitemap": {
+    "sitemap_urls": 80,
+    "md_urls": 80,
+    "missing_in_md": [],
+    "extra_in_md": [],
+    "duplicated_in_md": [],
+    "same_order": true,
+    "first_order_mismatch": null
+   },
+   "unique_images": 454,
+   "http": {
+    "pages_ok": 80,
+    "pages_failed": [],
+    "images_ok": 449,
+    "images_failed": [
+     {
+      "url": "https://holyland.israel.travel/assets/img/gallery//ctg/Main/coths.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://holyland.israel.travel/assets/img/gallery//ctg/Main/jordandesert.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://holyland.israel.travel/assets/img/posts/bank/archbishopcollins/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://holyland.israel.travel/assets/img/posts/bank/archbishopprendergast/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://holyland.israel.travel/assets/img/posts/bank/chocodejesus/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     }
+    ]
+   },
+   "structure_ok": true,
+   "sitemap_ok": true
+  },
+  "i-israel.co.il": {
+   "file": "i-israel.co.il.md",
+   "pages": 8,
+   "structure_errors": [],
+   "page_errors": {},
+   "page_warnings": {},
+   "sitemap": {
+    "sitemap_urls": 8,
+    "md_urls": 8,
+    "missing_in_md": [],
+    "extra_in_md": [],
+    "duplicated_in_md": [],
+    "same_order": true,
+    "first_order_mismatch": null
+   },
+   "unique_images": 169,
+   "http": {
+    "pages_ok": 1,
+    "pages_failed": [
+     {
+      "url": "https://i-israel.co.il/post/1/",
+      "status": 404,
+      "final_url": "https://i-israel.co.il/post/1/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://i-israel.co.il/post/2/",
+      "status": 404,
+      "final_url": "https://i-israel.co.il/post/2/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://i-israel.co.il/post/3/",
+      "status": 404,
+      "final_url": "https://i-israel.co.il/post/3/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://i-israel.co.il/post/4/",
+      "status": 404,
+      "final_url": "https://i-israel.co.il/post/4/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://i-israel.co.il/post/5/",
+      "status": 404,
+      "final_url": "https://i-israel.co.il/post/5/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://i-israel.co.il/post/6/",
+      "status": 404,
+      "final_url": "https://i-israel.co.il/post/6/",
+      "ok": false,
+      "note": ""
+     },
+     {
+      "url": "https://i-israel.co.il/post/7/",
+      "status": 404,
+      "final_url": "https://i-israel.co.il/post/7/",
+      "ok": false,
+      "note": ""
+     }
+    ],
+    "images_ok": 168,
+    "images_failed": [
+     {
+      "url": "https://i-israel.vercel.app/assets/img/posts/main/7/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "ok": false
+     }
+    ]
+   },
+   "structure_ok": true,
+   "sitemap_ok": true
+  },
+  "israel.travel": {
+   "file": "israel.travel.md",
+   "pages": 445,
+   "structure_errors": [],
+   "page_errors": {},
+   "page_warnings": {
+    "43": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "44": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "45": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "46": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "67": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "68": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "70": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "71": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "182": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "185": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "199": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "200": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "331": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "332": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "333": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "334": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "335": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "336": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "337": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "338": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "339": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "340": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "341": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "342": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "343": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "344": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "345": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "347": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "349": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "354": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "355": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "356": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "359": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "360": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "366": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "367": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "368": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "374": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "402": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "403": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "404": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "405": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "406": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "407": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "408": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "409": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "410": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "411": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "412": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "413": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "414": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "415": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "416": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "417": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "418": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "419": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "420": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "421": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "422": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "423": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "424": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "425": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "426": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "427": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "428": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "429": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "430": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "431": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "432": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "433": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "434": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "435": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "436": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "437": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "438": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "439": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "440": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "441": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "442": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "443": [
+     "original page has no body text (video/images only) – documented in the file"
+    ],
+    "444": [
+     "original page has no body text (video/images only) – documented in the file"
+    ]
+   },
+   "sitemap": {
+    "sitemap_urls": 445,
+    "md_urls": 445,
+    "missing_in_md": [],
+    "extra_in_md": [],
+    "duplicated_in_md": [],
+    "same_order": true,
+    "first_order_mismatch": null
+   },
+   "unique_images": 886,
+   "http": {
+    "pages_ok": 445,
+    "pages_failed": [],
+    "images_ok": 809,
+    "images_failed": [
+     {
+      "url": "http://www.goisrael.in/wp-content/uploads/2018/04/Markets-Shuks01-min.jpg",
+      "status": null,
+      "ok": false,
+      "error": "HTTPConnectionPool(host='www.goisrael.in', port=80): Max retries exceeded with url: /wp-content/uploads/2018/04/Markets-Shuks01-min.jpg (Caused by Nam",
+      "note": "(after 5 attempts)"
+     },
+     {
+      "url": "http://www.goisrael.in/wp-content/uploads/2018/04/Markets-Shuks02-min.jpg",
+      "status": null,
+      "ok": false,
+      "error": "HTTPConnectionPool(host='www.goisrael.in', port=80): Max retries exceeded with url: /wp-content/uploads/2018/04/Markets-Shuks02-min.jpg (Caused by Nam",
+      "note": "(after 5 attempts)"
+     },
+     {
+      "url": "http://www.goisrael.in/wp-content/uploads/2018/04/Markets-Shuks03-min.jpg",
+      "status": null,
+      "ok": false,
+      "error": "HTTPConnectionPool(host='www.goisrael.in', port=80): Max retries exceeded with url: /wp-content/uploads/2018/04/Markets-Shuks03-min.jpg (Caused by Nam",
+      "note": "(after 5 attempts)"
+     },
+     {
+      "url": "http://www.goisrael.in/wp-content/uploads/2018/04/Markets-Shuks04-min.jpg",
+      "status": null,
+      "ok": false,
+      "error": "HTTPConnectionPool(host='www.goisrael.in', port=80): Max retries exceeded with url: /wp-content/uploads/2018/04/Markets-Shuks04-min.jpg (Caused by Nam",
+      "note": "(after 5 attempts)"
+     },
+     {
+      "url": "https://canadavisitisrael.com//wp-content/uploads/2018/11/taf-inside-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=iso-8859-1",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2017/09/frankievallie-slider.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/04/Alt-J-inside-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/04/oz-inside-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/04/show02-big-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/04/show03-big-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/04/show04-big-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/05/12.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/05/Chainsmokers-big.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/05/blue-man-big.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/05/sean-pal-big.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/05/tommorow-land-slider-22-1.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/06/Untitled-1_0000_M861RD-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/06/Untitled-1_0001_JG99EJ-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/06/Untitled-1_0002_JFRHBF-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/06/Untitled-1_0003_GR3DPX-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/06/Untitled-1_0004_AX5EW7-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/06/big_0000_EX5ECD-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/06/big_0001_E97ERF-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/06/big_0002_CWNC1A-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/06/live03-big-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://hws.co.il/clients/2018/tel_aviv/wp-content/uploads/2018/08/skyabove1-min.jpg",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/ckfinder/userfiles/images/chrisrock-big.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/ckfinder/userfiles/images/jers-inside-in-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/ckfinder/userfiles/images/show01-big-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/ckfinder/userfiles/images/show05-big-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/1-3.png",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/2-3.png",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/26.jpeg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/26.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/3-2.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/img1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/img10.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/img12.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/img14.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/img16.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/img18.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/img21.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/img23.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/img24.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/img27.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/img8.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/video15.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/video17.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/video18.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/video21.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/video22.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/video3.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/video4.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/video5.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/video6.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/video7.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/09/video8.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/11/Carcass-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/11/Forigner-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/11/Kooks1-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/11/Kygo-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/11/Led-Zeppelin-22.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/11/Oh-Wonder-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/11/Take-that-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2017/11/Willy-William2-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2018/01/Andre-RIEU-big-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2018/01/Don-Mclean-big-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2018/01/Foreigner-big-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2018/01/Natalia-big-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2018/02/live01-big-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2018/02/live02an-big-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2018/02/live03-big-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2018/04/alice-big-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2018/04/boys-big-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2018/04/dj-big-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/new/tel_aviv/wp-content/uploads/2018/04/ian-big-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://israel.travel/tel_aviv/wp-content/uploads/2018/08/skyabove1-min.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     }
+    ]
+   },
+   "structure_ok": true,
+   "sitemap_ok": true
+  },
+  "israel.travel_kr": {
+   "file": "israel.travel_kr.md",
+   "pages": 0,
+   "structure_errors": [],
+   "page_errors": {},
+   "page_warnings": {},
+   "sitemap": {
+    "sitemap_urls": 0,
+    "md_urls": 0,
+    "missing_in_md": [],
+    "extra_in_md": [],
+    "duplicated_in_md": [],
+    "same_order": true,
+    "first_order_mismatch": null
+   },
+   "unique_images": 0,
+   "http": {
+    "pages_ok": 0,
+    "pages_failed": [],
+    "images_ok": 0,
+    "images_failed": []
+   },
+   "structure_ok": true,
+   "sitemap_ok": true
+  },
+  "it.goisrael.com": {
+   "file": "it.goisrael.com.md",
+   "pages": 120,
+   "structure_errors": [],
+   "page_errors": {},
+   "page_warnings": {
+    "59": [
+     "original page has no body text (video/images only) – documented in the file"
+    ]
+   },
+   "sitemap": {
+    "sitemap_urls": 120,
+    "md_urls": 120,
+    "missing_in_md": [],
+    "extra_in_md": [],
+    "duplicated_in_md": [],
+    "same_order": true,
+    "first_order_mismatch": null
+   },
+   "unique_images": 619,
+   "http": {
+    "pages_ok": 120,
+    "pages_failed": [],
+    "images_ok": 579,
+    "images_failed": [
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/33/3.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/34/3.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/36/2.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/42/2.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/44/2.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/47/2.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/51/3.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/52/2.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/54/2.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/55/2.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/56/2.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/57/2.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/76/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/76/2.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/77/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/77/2.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/77/3.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/78/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/78/2.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/79/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/79/2.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/79/3.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/bank/44/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/bank/45/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/jerusalem-must/2.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/magic-city-of-splender/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img//posts/simply-delicious/1.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img/gallery/galilee/small/18.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img/gallery/haifa/small/10.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img/gallery/haifa/small/11.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img/gallery/haifa/small/12.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img/gallery/haifa/small/13.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img/gallery/haifa/small/14.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img/gallery/haifa/small/15.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img/gallery/haifa/small/16.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img/gallery/haifa/small/17.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img/gallery/haifa/small/18.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img/gallery/haifa/small/7.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img/gallery/haifa/small/8.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     },
+     {
+      "url": "https://it.goisrael.com/assets/img/gallery/haifa/small/9.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     }
+    ]
+   },
+   "structure_ok": true,
+   "sitemap_ok": true
+  },
+  "ru.goisrael.com": {
+   "file": "ru.goisrael.com.md",
+   "pages": 97,
+   "structure_errors": [],
+   "page_errors": {},
+   "page_warnings": {
+    "86": [
+     "original page has no body text (video/images only) – documented in the file"
+    ]
+   },
+   "sitemap": {
+    "sitemap_urls": 97,
+    "md_urls": 97,
+    "missing_in_md": [],
+    "extra_in_md": [],
+    "duplicated_in_md": [],
+    "same_order": true,
+    "first_order_mismatch": null
+   },
+   "unique_images": 341,
+   "http": {
+    "pages_ok": 97,
+    "pages_failed": [],
+    "images_ok": 340,
+    "images_failed": [
+     {
+      "url": "https://ru.goisrael.com/assets/img/insta-icon.png",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     }
+    ]
+   },
+   "structure_ok": true,
+   "sitemap_ok": true
+  },
+  "www.goisrael.com": {
+   "file": "www.goisrael.com.md",
+   "pages": 134,
+   "structure_errors": [],
+   "page_errors": {},
+   "page_warnings": {},
+   "sitemap": {
+    "sitemap_urls": 134,
+    "md_urls": 134,
+    "missing_in_md": [],
+    "extra_in_md": [],
+    "duplicated_in_md": [],
+    "same_order": true,
+    "first_order_mismatch": null
+   },
+   "unique_images": 621,
+   "http": {
+    "pages_ok": 134,
+    "pages_failed": [],
+    "images_ok": 620,
+    "images_failed": [
+     {
+      "url": "https://goisrael.com/assets/img/gallery/galilee/small/18.jpg",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "ok": false
+     }
+    ]
+   },
+   "structure_ok": true,
+   "sitemap_ok": true
+  }
+ }
+}

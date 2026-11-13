@@ -4,7 +4,7 @@
 Standard library only (plus the system openssl binary for AES). Run: python3 tools/build.py
 Reads the five source files from source/, writes HTML into site/.
 """
-import os, re, sys, json, zipfile, html, collections, subprocess, unicodedata, secrets, hashlib, base64, stat
+import os, re, sys, json, zipfile, html, collections, subprocess, unicodedata, secrets, hashlib, hmac, base64, stat
 import xml.etree.ElementTree as ET
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -983,16 +983,25 @@ def asset(name):
     h = hashlib.sha256(open(path, 'rb').read()).hexdigest()[:10] if os.path.exists(path) else '0'
     return f'assets/{name}?v={h}'
 
+def comments_api():
+    url = (CONFIG.get('comments_api') or '').strip()
+    return url if re.fullmatch(r'https://[A-Za-z0-9.-]+(/[\w./-]*)?', url) else ''
+
 def docs_script():
-    return 'window.DOCS = ' + json.dumps([dict(id=m['id'], title=m['title'], nav=m['nav']) for m in DOCS], ensure_ascii=False) + ';'
+    js = 'window.DOCS = ' + json.dumps([dict(id=m['id'], title=m['title'], nav=m['nav']) for m in DOCS], ensure_ascii=False) + ';'
+    if comments_api():
+        js += ' window.COMMENTS_API = ' + json.dumps(comments_api()) + ';'
+    return js
 
 def csp_hash(script_text):
     return "'sha256-" + base64.b64encode(hashlib.sha256(script_text.encode('utf-8')).digest()).decode('ascii') + "'"
 
 def csp_meta():
     hashes = [csp_hash(docs_script())]
+    api = comments_api()
+    api_origin = (' ' + '/'.join(api.split('/')[:3])) if api else ''
     policy = ("default-src 'none'; script-src 'self' " + ' '.join(hashes) + " https://www.clarity.ms https://scripts.clarity.ms; "
-              "style-src 'self'; img-src 'self' data: https://*.clarity.ms https://c.bing.com; connect-src https://*.clarity.ms https://c.bing.com; "
+              "style-src 'self'; img-src 'self' data: https://*.clarity.ms https://c.bing.com; connect-src https://*.clarity.ms https://c.bing.com" + api_origin + "; "
               "font-src 'self'; base-uri 'none'; form-action 'self'; frame-src 'none'; object-src 'none'; manifest-src 'none'")
     return '<meta http-equiv="Content-Security-Policy" content="' + policy + '">'
 
@@ -1215,7 +1224,7 @@ def build():
 <img class="mark" src="{asset('logo-symbol.png')}" alt="" width="480" height="229">
 <p class="eyebrow">מסמכי הפרויקט</p>
 <h1>מסמכי פלטפורמת התיירות הלאומית</h1>
-<p class="lead">חמשת מסמכי הפרויקט בגרסת קריאה מקושרת: כל הפניה בין מסמכים היא קישור, ואפשר להוסיף הערות על כל פסקה, כותרת או שורת טבלה. ההערות נשמרות בדפדפן הזה בלבד, וניתן לייצא ולייבא אותן כקובץ.</p>
+<p class="lead">חמשת מסמכי הפרויקט בגרסת קריאה מקושרת: כל הפניה בין מסמכים היא קישור, ואפשר להוסיף הערות על כל פסקה, כותרת או שורת טבלה. ההערות משותפות לכל מי שיש לו גישה לאתר, וניתן לסמן הערה כטופלה.</p>
 </header>
 <ol class="doclist">
 {''.join(items)}
@@ -1233,6 +1242,9 @@ def build():
     if os.path.exists(old):
         os.remove(old)
     print('pages encrypted:', len(pages), '| password file:', PASSWORD_FILE, '(new)' if generated else '(existing)')
+    # the comments API (backend/) accepts a bearer token derived from the same key; it stores only this hash
+    token = hmac.new(key, b'tourism-comments-api-v1', hashlib.sha256).hexdigest()
+    print('COMMENTS_TOKEN_SHA256 (Vercel env of backend/):', hashlib.sha256(token.encode('ascii')).hexdigest())
     json.dump(report, open(os.path.join(BUILD, 'report.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     for k, v in report['docs'].items():
         print(k, v)
