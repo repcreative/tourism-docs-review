@@ -14,26 +14,28 @@ const DOC_PATH = 'comments/all.json';
 const CACHE_SECONDS = 60;            // the shortest Blob CDN cache: others see changes within ~1-2 min
 const ID_RE = /^[\w-]{1,64}$/;
 const MAX_DATA = 20000, MAX_BATCH = 1000, MAX_COMMENTS = 5000;
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'https://repcreative.github.io').split(',').map((s) => s.trim());
+const HOME_ORIGIN = 'https://repcreative.github.io';
 
-function cors(origin) {
-  const h = {
+// Any origin may call this API. What protects the store is the bearer token (derived from
+// the site key) and the client-side encryption, not the page address: readers reach the
+// site through translation proxies, corporate gateways and saved copies, and an origin
+// allowlist made their browsers drop every request after the preflight, so their comments
+// never left the browser. No cookies are involved, so '*' is safe here.
+function cors(origin, method) {
+  if (origin !== HOME_ORIGIN) console.log('comments: ' + method + ' from origin ' + String(origin).slice(0, 120));
+  return {
+    'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Authorization, Content-Type, If-None-Match',
+    'Access-Control-Allow-Headers': 'Authorization, Content-Type, If-None-Match, Cache-Control, Pragma',
     'Access-Control-Expose-Headers': 'ETag',
     'Access-Control-Max-Age': '600',
     'Cache-Control': 'no-store',
-    Vary: 'Origin',
   };
-  if (origin && (ALLOWED_ORIGINS.includes(origin) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin))) {
-    h['Access-Control-Allow-Origin'] = origin;
-  }
-  return h;
 }
 function reply(req, status, body, extra) {
   return new Response(body === null ? null : JSON.stringify(body), {
     status,
-    headers: { 'Content-Type': 'application/json; charset=utf-8', ...cors(req.headers.get('origin')), ...(extra || {}) },
+    headers: { 'Content-Type': 'application/json; charset=utf-8', ...cors(req.headers.get('origin'), req.method), ...(extra || {}) },
   });
 }
 function authorized(req) {
@@ -61,7 +63,7 @@ async function readDoc({ fresh, ifNoneMatch } = {}) {
 }
 
 export function OPTIONS(req) {
-  return new Response(null, { status: 204, headers: cors(req.headers.get('origin')) });
+  return new Response(null, { status: 204, headers: cors(req.headers.get('origin'), 'OPTIONS') });
 }
 
 export async function GET(req) {
